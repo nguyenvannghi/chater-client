@@ -34,12 +34,7 @@
         "start-js": "react-scripts start",
         "build-js": "react-scripts build",
         "dev": "cross-env REACT_APP_ENV=dev npm-run-all -p watch-css start-js",
-        "qc": "cross-env REACT_APP_ENV=qc npm-run-all -p watch-css start-js",
-        "uat": "cross-env REACT_APP_ENV=uat npm-run-all -p watch-css start-js",
-        "production": "cross-env REACT_APP_ENV=production GENERATE_SOURCEMAP=false npm-run-all build-css build-js",
-        "build-dev": "cross-env REACT_APP_ENV=dev npm-run-all build-css build-js",
-        "build-qc": "cross-env REACT_APP_ENV=qc npm-run-all build-css build-js",
-        "build-uat": "cross-env REACT_APP_ENV=uat npm-run-all build-css build-js",
+        "build": "cross-env REACT_APP_ENV=production GENERATE_SOURCEMAP=false npm-run-all build-css build-js",
         "test": "cross-env react-scripts test --env=jsdom",
         "analyze": "cross-env source-map-explorer 'build/static/js/*.js'",
         "prettier": "cross-env find . \\( -name node_modules -o -name __generated__ -o -name build \\) -prune -or \\( -name '*.js' -o -name '*.html' -o -name '*.scss' -o -name '*.json' -o -name '*.md' \\) -print | xargs prettier --write"
