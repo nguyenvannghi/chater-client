@@ -4,8 +4,14 @@ import { AddCircle } from 'grommet-icons';
 
 const SidebarLeft = () => {
     return (
-        <Box align="stretch" justify="between" direction="row" width="medium" fill="vertical">
-            <Box align="stretch" justify="start" background={{ color: 'brand', opacity: 'strong' }} direction="column" fill="horizontal">
+        <Box
+            align="stretch"
+            justify="between"
+            direction="row"
+            width="medium"
+            fill="vertical"
+            background={{ dark: true, color: 'brand', opacity: 'medium' }}>
+            <Box align="stretch" justify="start" background={{ opacity: 'strong' }} direction="column" fill="horizontal">
                 <Box
                     align="start"
                     justify="start"
@@ -54,7 +60,8 @@ const SidebarLeft = () => {
                         direction="row-responsive"
                         margin={{ bottom: 'xsmall' }}
                         alignSelf="stretch"
-                        pad={{ left: 'small', right: 'small' }}>
+                        pad={{ left: 'small', right: 'small' }}
+                        background={{ color: 'brand', dark: true, opacity: 'medium' }}>
                         <Heading level="4" textAlign="start" margin="none">
                             #toong office
                         </Heading>
