@@ -35,7 +35,7 @@ const Routers = () => {
                     </>
                 ) : (
                     <>
-                        <nav>
+                        {/* <nav>
                             <ul>
                                 <li>
                                     <Link to="/home">Home</Link>
@@ -53,7 +53,7 @@ const Routers = () => {
                                     <Link to="/">Chater</Link>
                                 </li>
                             </ul>
-                        </nav>
+                        </nav> */}
                         <Switch>
                             <Route path="/about">
                                 <About />

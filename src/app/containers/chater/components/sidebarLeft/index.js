@@ -8,7 +8,6 @@ const SidebarLeft = () => {
             align="stretch"
             justify="between"
             direction="row"
-            width="medium"
             fill="vertical"
             background={{ dark: true, color: 'brand', opacity: 'medium' }}>
             <Box align="stretch" justify="start" background={{ opacity: 'strong' }} direction="column" fill="horizontal">
@@ -62,7 +61,7 @@ const SidebarLeft = () => {
                         alignSelf="stretch"
                         pad={{ left: 'small', right: 'small' }}
                         background={{ color: 'brand', dark: true, opacity: 'medium' }}>
-                        <Heading level="4" textAlign="start" margin="none">
+                        <Heading level="5" textAlign="start" margin="none">
                             #toong office
                         </Heading>
                         <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
@@ -74,7 +73,7 @@ const SidebarLeft = () => {
                         margin={{ bottom: 'xsmall' }}
                         alignSelf="stretch"
                         pad={{ left: 'small', right: 'small' }}>
-                        <Heading level="4" textAlign="start" margin="none">
+                        <Heading level="5" textAlign="start" margin="none">
                             #toong office
                         </Heading>
                         <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
@@ -86,7 +85,7 @@ const SidebarLeft = () => {
                         margin={{ bottom: 'xsmall' }}
                         alignSelf="stretch"
                         pad={{ left: 'small', right: 'small' }}>
-                        <Heading level="4" textAlign="start" margin="none">
+                        <Heading level="5" textAlign="start" margin="none">
                             #toong office
                         </Heading>
                         <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
@@ -98,7 +97,7 @@ const SidebarLeft = () => {
                         margin={{ bottom: 'xsmall' }}
                         alignSelf="stretch"
                         pad={{ left: 'small', right: 'small' }}>
-                        <Heading level="4" textAlign="start" margin="none">
+                        <Heading level="5" textAlign="start" margin="none">
                             #toong office
                         </Heading>
                         <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
