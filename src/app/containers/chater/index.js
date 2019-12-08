@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Grid } from 'grommet';
+import { SidebarLeft, SidebarRight } from './components';
 
 const Chater = () => {
     return (
@@ -7,7 +8,6 @@ const Chater = () => {
             fill
             rows={['xxsmall', 'flex', 'xxsmall']}
             columns={['auto', 'flex']}
-            gap="small"
             areas={[
                 { name: 'header', start: [0, 0], end: [4, 0] },
                 { name: 'nav', start: [0, 1], end: [0, 1] },
@@ -18,14 +18,14 @@ const Chater = () => {
             <Box gridArea="header" background="#f89325">
                 Header
             </Box>
-            <Box gridArea="nav" background="#e4281b">
-                nav
+            <Box gridArea="nav" background="black">
+                <SidebarLeft />
             </Box>
             <Box gridArea="main" background="#25f864">
                 Contents
             </Box>
-            <Box gridArea="sidebar" background="#25f864">
-                siddebar
+            <Box gridArea="sidebar" background="black">
+                <SidebarRight />
             </Box>
             <Box gridArea="footer" background="#3b64d4">
                 footer

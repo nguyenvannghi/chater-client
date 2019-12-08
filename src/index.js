@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Grommet } from 'grommet';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 import store from './app/stores';
 import Routes from './app/routes';
@@ -27,15 +29,19 @@ const theme = {
     },
 };
 
+const client = new ApolloClient({
+    uri: process.env.REACT_APP_GRAPHQL_URI,
+});
+
 ReactDOM.render(
-    <Provider store={store()}>
-        <Grommet theme={theme} full>
-            {/* <ResponsiveContext.Consumer> */}
-            <Toast />
-            <LoadingApp />
-            <Routes />
-            {/* </ResponsiveContext.Consumer> */}
-        </Grommet>
-    </Provider>,
+    <ApolloProvider client={client}>
+        <Provider store={store()}>
+            <Grommet theme={theme} full>
+                <Toast />
+                <LoadingApp />
+                <Routes />
+            </Grommet>
+        </Provider>
+    </ApolloProvider>,
     document.getElementById('root'),
 );
