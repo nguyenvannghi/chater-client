@@ -1,5 +1,4 @@
-import SidebarLeft from './sidebarLeft';
-import SidebarRight from './sidebarRight';
-import ChatContent from './chatContent';
+import Sidebar from './sidebar';
+import ChatBox from './chatBox';
 
-export { SidebarLeft, SidebarRight, ChatContent };
+export { Sidebar, ChatBox };
