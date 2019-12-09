@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Grommet } from 'grommet';
 import ApolloClient from 'apollo-boost';
+import { createHttpLink } from 'apollo-link-http';
+import { setContext } from 'apollo-link-context';
 import { ApolloProvider } from '@apollo/react-hooks';
+import { listCookieStorageName, getCookie } from 'app/_utils/cookieStorage';
 
 import store from './app/stores';
 import Routes from './app/routes';
@@ -29,8 +32,24 @@ const theme = {
     },
 };
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
     uri: process.env.REACT_APP_GRAPHQL_URI,
+});
+
+const authLink = setContext((_, { headers }) => {
+    // get the authentication token from local storage if it exists
+    const token = getCookie.getCookie(listCookieStorageName.access_token);
+    // return the headers to the context so httpLink can read them
+    return {
+        headers: {
+            ...headers,
+            authorization: token ? `Bearer ${token}` : '',
+        },
+    };
+});
+console.log(httpLink);
+const client = new ApolloClient({
+    link: authLink.concat(httpLink),
 });
 
 ReactDOM.render(

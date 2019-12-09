@@ -1,8 +1,19 @@
 import React from 'react';
 import { Box, Heading, Button, Image, Paragraph } from 'grommet';
 import { AddCircle } from 'grommet-icons';
-
+import { useQuery } from '@apollo/react-hooks';
+import { GET_ROOMS } from '../../graphql/queries';
 const SidebarLeft = () => {
+    const { loading, error, data } = useQuery(GET_ROOMS, {
+        variables: {
+            where: {
+                users: ['5de8c412ea0603488de5eb0f'],
+            },
+        },
+    });
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error :(</p>;
+    console.log(data);
     return (
         <Box
             align="stretch"

@@ -4,7 +4,7 @@ import { Add, Apps, Accessibility } from 'grommet-icons';
 
 const ChatContent = () => {
     return (
-        <Box fill="vertical" overflow="hidden" align="center" background={{ color: 'black' }} direction="column" justify="between">
+        <Box fill="vertical" overflow="hidden" align="center" background={{ color: 'white' }} direction="column" justify="between">
             <Box
                 align="center"
                 justify="center"
