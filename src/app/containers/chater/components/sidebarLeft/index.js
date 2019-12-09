@@ -64,55 +64,21 @@ const SidebarLeft = () => {
                     <Button icon={<AddCircle />} />
                 </Box>
                 <Box align="center" justify="center" alignSelf="stretch" pad={{ top: 'small', bottom: 'small' }}>
-                    <Box
-                        align="baseline"
-                        justify="between"
-                        direction="row-responsive"
-                        margin={{ bottom: 'xsmall' }}
-                        alignSelf="stretch"
-                        pad={{ left: 'small', right: 'small' }}
-                        background={{ color: 'brand', dark: true, opacity: 'medium' }}>
-                        <Heading level="5" textAlign="start" margin="none">
-                            #toong office
-                        </Heading>
-                        <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
-                    </Box>
-                    <Box
-                        align="baseline"
-                        justify="between"
-                        direction="row-responsive"
-                        margin={{ bottom: 'xsmall' }}
-                        alignSelf="stretch"
-                        pad={{ left: 'small', right: 'small' }}>
-                        <Heading level="5" textAlign="start" margin="none">
-                            #toong office
-                        </Heading>
-                        <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
-                    </Box>
-                    <Box
-                        align="baseline"
-                        justify="between"
-                        direction="row-responsive"
-                        margin={{ bottom: 'xsmall' }}
-                        alignSelf="stretch"
-                        pad={{ left: 'small', right: 'small' }}>
-                        <Heading level="5" textAlign="start" margin="none">
-                            #toong office
-                        </Heading>
-                        <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
-                    </Box>
-                    <Box
-                        align="baseline"
-                        justify="between"
-                        direction="row-responsive"
-                        margin={{ bottom: 'xsmall' }}
-                        alignSelf="stretch"
-                        pad={{ left: 'small', right: 'small' }}>
-                        <Heading level="5" textAlign="start" margin="none">
-                            #toong office
-                        </Heading>
-                        <Button label="1" type="button" primary={true} color="status-error" fill="vertical" />
-                    </Box>
+                    {data &&
+                        data.rooms.map(item => (
+                            <Box
+                                align="baseline"
+                                justify="between"
+                                direction="row-responsive"
+                                margin={{ bottom: 'xsmall' }}
+                                alignSelf="stretch"
+                                pad={{ left: 'small', right: 'small' }}>
+                                <Heading level="5" textAlign="start" margin="none">
+                                    #{item.name}
+                                </Heading>
+                                <Button label="1" type="button" color="status-error" fill="vertical" />
+                            </Box>
+                        ))}
                 </Box>
             </Box>
         </Box>

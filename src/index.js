@@ -2,9 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Grommet } from 'grommet';
-import ApolloClient from 'apollo-boost';
-import { createHttpLink } from 'apollo-link-http';
-import { setContext } from 'apollo-link-context';
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache } from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { listCookieStorageName, getCookie } from 'app/_utils/cookieStorage';
 
@@ -32,24 +30,25 @@ const theme = {
     },
 };
 
-const httpLink = createHttpLink({
-    uri: process.env.REACT_APP_GRAPHQL_URI,
-});
+const httpLink = new HttpLink({ uri: process.env.REACT_APP_GRAPHQL_URI });
 
-const authLink = setContext((_, { headers }) => {
-    // get the authentication token from local storage if it exists
-    const token = getCookie.getCookie(listCookieStorageName.access_token);
-    // return the headers to the context so httpLink can read them
-    return {
+const authLink = new ApolloLink((operation, forward) => {
+    // Retrieve the authorization token from cookie
+    const token = getCookie(listCookieStorageName.access_token);
+    console.log(token);
+    // Use the setContext method to set the HTTP headers.
+    operation.setContext({
         headers: {
-            ...headers,
             authorization: token ? `Bearer ${token}` : '',
         },
-    };
+    });
+    // Call the next link in the middleware chain.
+    return forward(operation);
 });
-console.log(httpLink);
+
 const client = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: authLink.concat(httpLink), // Chain it with the HttpLink
+    cache: new InMemoryCache(),
 });
 
 ReactDOM.render(
