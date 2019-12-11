@@ -66,3 +66,14 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `yarn build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+**vue-apollo**: an Apollo/GraphQL integration for Vue.js.
+**graphql**: a reference implementation of GraphQL for JavaScript.
+**apollo-client**: a fully-featured, production-ready caching GraphQL client for every server or UI framework.
+**apollo-link**: a standard interface for modifying control flow of GraphQL requests and fetching GraphQL results.
+**apollo-link-http**: used to get GraphQL results over a network using HTTP fetch.
+**apollo-cache-inmemory**: cache implementation for Apollo Client 2.0.
+**graphql-tag**: a JavaScript template literal tag that parses GraphQL queries.
+**apollo-link-ws**: allows sending of GraphQL operations over a WebSocket.
+**apollo-utilities**: utilities for working with GraphQL ASTs.
+**subscriptions-transport-ws**: a WebSocket client + server for GraphQL subscriptions.

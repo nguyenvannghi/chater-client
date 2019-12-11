@@ -1,4 +1,4 @@
-import { gql } from 'apollo-boost';
+import gql from 'graphql-tag';
 const GET_ROOMS = gql`
     query getRooms($where: Where) {
         rooms(where: $where) {

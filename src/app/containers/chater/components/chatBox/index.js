@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Box, Text, Button, Image, TextArea } from 'grommet';
 import { AddCircle, Camera, Apps, Attachment, Add } from 'grommet-icons';
+import { useSubscription, useMutation } from '@apollo/react-hooks';
+import { MESSAGE_ADD_SUB } from '../../graphql/subscriptions';
+import { CREATE_MESSAGE } from '../../graphql/mutation';
+import { createMessageAction } from '../../service';
 
 const ChatBox = () => {
+    const { data, loading } = useSubscription(MESSAGE_ADD_SUB, { variables: {} });
+    const [muationCreateMessage] = useMutation(CREATE_MESSAGE);
+
+    const onSubmit = useCallback(() => {
+        console.log(12312312);
+        const data = {
+            user_id: {
+                _id: '5de8c412ea0603488de5eb0f',
+            },
+            room_id: {
+                _id: '5deb22cf347d6f52a6b84a11',
+            },
+            message_body: 'Hello guys',
+            message_status: true,
+            created_by: {
+                _id: '5de8c412ea0603488de5eb0f',
+            },
+        };
+        return createMessageAction(data, muationCreateMessage), [muationCreateMessage];
+    });
+
     return (
         <Box
             align="center"
@@ -217,7 +242,7 @@ const ChatBox = () => {
                     border={{ color: 'dark-2', side: 'left' }}>
                     <TextArea plain={true} size="small" placeholder="Type a message..." />
                     <Button icon={<Attachment />} />
-                    <Button icon={<Add />} />
+                    <Button icon={<Add />} onClick={onSubmit} />
                 </Box>
             </Box>
         </Box>
