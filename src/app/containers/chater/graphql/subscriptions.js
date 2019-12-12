@@ -17,5 +17,22 @@ const MESSAGE_ADD_SUB = gql`
         }
     }
 `;
+const MESSAGE_UPDATE_SUB = gql`
+    subscription messageUpdated {
+        messageUpdated {
+            _id
+            room {
+                _id
+                name
+            }
+            sender {
+                _id
+                username
+            }
+            message_body
+            message_status
+        }
+    }
+`;
 
-export { MESSAGE_ADD_SUB };
+export { MESSAGE_ADD_SUB, MESSAGE_UPDATE_SUB };

@@ -22,7 +22,7 @@ const theme = {
             white: '#fff',
         },
         font: {
-            family: 'Roboto',
+            family: 'Luckiest Guy',
             size: '14px',
             height: '20px',
         },

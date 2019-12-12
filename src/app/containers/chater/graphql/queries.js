@@ -13,5 +13,29 @@ const GET_ROOMS = gql`
         }
     }
 `;
+const GET_MESSAGES = gql`
+    query getMessages($where: Where) {
+        messages(where: $where) {
+            _id
+            room {
+                _id
+                description
+                topic
+            }
+            sender {
+                _id
+                username
+            }
+            message_body
+            message_body
+            created_by {
+                _id
+                username
+            }
+            createdAt
+            updatedAt
+        }
+    }
+`;
 
-export { GET_ROOMS };
+export { GET_ROOMS, GET_MESSAGES };

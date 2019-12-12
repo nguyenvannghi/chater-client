@@ -7,16 +7,6 @@ import { getMainDefinition } from 'apollo-utilities';
 import { WebSocketLink } from 'apollo-link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { listCookieStorageName, getCookie } from 'app/_utils/cookieStorage';
-
-// const wsLink = () => {
-//     return new WebSocketLink({
-//         uri: 'ws://localhost:5002/subscriptions',
-//         options: {
-//             reconnect: true,
-//         },
-//     });
-// };
-
 const clientSub = new SubscriptionClient('ws://localhost:5002/subscriptions', {
     reconnect: true,
 });
@@ -34,7 +24,6 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 const link = split(
     ({ query }) => {
-        console.log(query);
         const { kind, operation } = getMainDefinition(query);
         return kind === 'OperationDefinition' && operation === 'subscription';
     },

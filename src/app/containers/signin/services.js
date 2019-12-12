@@ -1,5 +1,6 @@
 import { isEmpty } from 'lodash';
 import { listCookieStorageName, setCookie } from 'app/_utils/cookieStorage';
+import history from 'app/routes/history';
 
 const loginAction = async (data, mutation) => {
     try {
@@ -11,6 +12,7 @@ const loginAction = async (data, mutation) => {
                     login: { token },
                 } = resp.data;
                 setCookie(listCookieStorageName.access_token, token, 2);
+                return history.push('/');
             }
         });
     } catch (error) {

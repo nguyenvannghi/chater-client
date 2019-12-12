@@ -22,3 +22,7 @@ export const STATUS_MESSAGE = {
     WARNING: 'warning',
     INFO: 'info',
 };
+
+export const MOMENT = {
+    HOUR_MINUTES: 'hh:mm a',
+};

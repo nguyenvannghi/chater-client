@@ -1,6 +1,6 @@
 import React, { memo, lazy, Suspense, useState } from 'react';
 import { connect } from 'react-redux';
-import { Route, Switch, Link, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
@@ -12,7 +12,6 @@ import { listCookieStorageName, getCookie } from '../_utils/cookieStorage';
 const Home = lazy(() => import('app/containers/home'));
 const About = lazy(() => import('app/containers/about'));
 const SignIn = lazy(() => import('app/containers/signin'));
-const UseReducer = lazy(() => import('app/containers/useReducer'));
 const Chater = lazy(() => import('app/containers/chater'));
 
 const Routers = () => {
@@ -58,10 +57,6 @@ const Routers = () => {
                             <Route path="/about">
                                 <About />
                             </Route>
-                            <Route path="/use-reducer">
-                                <UseReducer />
-                            </Route>
-
                             <Route path="/">
                                 <Chater />
                             </Route>
