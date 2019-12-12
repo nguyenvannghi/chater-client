@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { Box, Text, Button, Image, TextArea } from 'grommet';
 import { AddCircle, Camera, Apps, Attachment, Add } from 'grommet-icons';
 import { useSubscription, useMutation, useQuery } from '@apollo/react-hooks';
@@ -10,6 +10,8 @@ import { MOMENT } from 'app/consts';
 import { createMessageAction } from '../../service';
 
 const ChatBox = () => {
+    const textInput = useRef();
+    const messageListRef = useRef();
     const [messages, setMessages] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [muationCreateMessage] = useMutation(CREATE_MESSAGE);
@@ -22,6 +24,7 @@ const ChatBox = () => {
                     data: { messageAdded },
                 } = subscriptionData;
                 setMessages(prevMessage => [...prevMessage, messageAdded]);
+                scrollToBottom();
             }
         },
     });
@@ -34,21 +37,31 @@ const ChatBox = () => {
         }
     }, [messageRespone, setMessages]);
 
+    const scrollToBottom = () => {
+        const scrollHeight = messageListRef.current.scrollHeight;
+        const height = messageListRef.current.clientHeight;
+        const maxScrollTop = scrollHeight - height;
+        messageListRef.current.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
+    };
+
     const onSubmit = useCallback(() => {
+        const currentUser = getCurrentUser();
         const data = {
             user_id: {
-                _id: '5de8c412ea0603488de5eb0f',
+                _id: currentUser._id,
             },
             room_id: {
                 _id: '5deb471c64d66e7f78856798',
             },
-            message_body: 'Hello guys',
+            message_body: textInput.current.value,
             message_status: true,
             created_by: {
-                _id: '5de8c412ea0603488de5eb0f',
+                _id: currentUser._id,
             },
         };
-        return createMessageAction(data, muationCreateMessage);
+        return createMessageAction(data, muationCreateMessage).then(res => {
+            textInput.current.value = '';
+        });
     }, [muationCreateMessage]);
 
     const isMyMessage = (username, _id) => {
@@ -134,7 +147,7 @@ const ChatBox = () => {
                             pad={{ left: 'small', right: 'small' }}
                             direction="column">
                             <Text weight="bold" size="small">
-                                Emily Cook
+                                {getCurrentUser().username}
                             </Text>
                             <Text size="xsmall">Online</Text>
                         </Box>
@@ -163,7 +176,15 @@ const ChatBox = () => {
                 }}
                 direction="row-responsive"
                 overflow="hidden">
-                <Box align="stretch" justify="start" direction="row-responsive" pad="small" overflow="auto" alignSelf="stretch" wrap={true}>
+                <Box
+                    align="stretch"
+                    justify="start"
+                    direction="row-responsive"
+                    pad="small"
+                    overflow="auto"
+                    alignSelf="stretch"
+                    wrap={true}
+                    ref={messageListRef}>
                     {renderMessage()}
                 </Box>
             </Box>
@@ -176,7 +197,7 @@ const ChatBox = () => {
                     flex="grow"
                     alignSelf="stretch"
                     border={{ color: 'dark-2', side: 'left' }}>
-                    <TextArea plain={true} size="small" placeholder="Type a message..." />
+                    <TextArea plain={true} size="small" placeholder="Type a message..." ref={textInput} />
                     <Button icon={<Attachment />} />
                     <Button icon={<Add />} onClick={onSubmit} />
                 </Box>
