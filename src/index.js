@@ -22,7 +22,8 @@ const theme = {
             white: '#fff',
         },
         font: {
-            family: 'Luckiest Guy',
+            // family: 'Luckiest Guy',
+            family: 'Baloo',
             size: '14px',
             height: '20px',
         },
