@@ -1,15 +1,16 @@
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useCallback, useEffect, useState, useRef, memo } from 'react';
+import PropTypes from 'prop-types';
 import { Box, Text, Button, Image, TextArea } from 'grommet';
 import { AddCircle, Camera, Apps, Attachment, Add } from 'grommet-icons';
 import { useSubscription, useMutation, useQuery } from '@apollo/react-hooks';
 import * as lodash from 'lodash';
 import * as moment from 'moment';
 import { MESSAGE_ADD_SUB, CREATE_MESSAGE, GET_MESSAGES } from 'app/containers/chater/graphql';
-import { getCurrentUser } from 'app/consts/helper';
 import { MOMENT } from 'app/consts';
 import { createMessageAction } from '../../service';
 
-const ChatBox = () => {
+const ChatBox = ({ currentUser }) => {
     const textInput = useRef();
     const messageListRef = useRef();
     const [messages, setMessages] = useState(null);
@@ -45,7 +46,6 @@ const ChatBox = () => {
     };
 
     const onSubmit = useCallback(() => {
-        const currentUser = getCurrentUser();
         const data = {
             user_id: {
                 _id: currentUser._id,
@@ -62,10 +62,9 @@ const ChatBox = () => {
         return createMessageAction(data, muationCreateMessage).then(res => {
             textInput.current.value = '';
         });
-    }, [muationCreateMessage]);
+    }, []);
 
     const isMyMessage = (username, _id) => {
-        const currentUser = getCurrentUser();
         return (currentUser && lodash.isEqual(username, currentUser.username)) || lodash.isEqual(_id, currentUser._id);
     };
 
@@ -147,7 +146,7 @@ const ChatBox = () => {
                             pad={{ left: 'small', right: 'small' }}
                             direction="column">
                             <Text weight="bold" size="small">
-                                {getCurrentUser().username}
+                                {currentUser.username}
                             </Text>
                             <Text size="xsmall">Online</Text>
                         </Box>
@@ -206,4 +205,8 @@ const ChatBox = () => {
     );
 };
 
-export default ChatBox;
+ChatBox.propTypes = {
+    currentUser: PropTypes.object,
+};
+
+export default memo(ChatBox);

@@ -9,6 +9,7 @@ const GET_ROOMS = gql`
             }
             name
             description
+            image_url
             topic
         }
     }
