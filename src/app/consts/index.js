@@ -26,3 +26,11 @@ export const STATUS_MESSAGE = {
 export const MOMENT = {
     HOUR_MINUTES: 'hh:mm a',
 };
+
+export const FETCH_POLICY = {
+    CACHE_FIRST: 'cache-first',
+    CACHE_AND_NETWORK: 'cache-and-network',
+    NETWORK_ONLY: 'network-only',
+    CACHE_ONLY: 'cache-only',
+    NO_CACHE: 'no-cache',
+};

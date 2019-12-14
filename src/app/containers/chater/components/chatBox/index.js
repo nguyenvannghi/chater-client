@@ -1,22 +1,28 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useState, useRef, memo } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
+import { createStructuredSelector } from 'reselect';
 import { Box, Text, Button, Image, TextArea } from 'grommet';
 import { AddCircle, Camera, Apps, Attachment, Add } from 'grommet-icons';
-import { useSubscription, useMutation, useQuery } from '@apollo/react-hooks';
+import { useSubscription, useMutation } from '@apollo/react-hooks';
+import { withApollo } from 'react-apollo';
 import * as lodash from 'lodash';
 import * as moment from 'moment';
-import { MESSAGE_ADD_SUB, CREATE_MESSAGE, GET_MESSAGES } from 'app/containers/chater/graphql';
+import { MESSAGE_ADD_SUB, CREATE_MESSAGE } from 'app/containers/chater/graphql';
 import { MOMENT } from 'app/consts';
 import { createMessageAction } from '../../service';
+import { makeSelectRoom } from '../../saga/room/selector';
+import { makeSelectMessages, makeSelectLoadingMessages } from '../../saga/message/selector';
+import { messageCall } from '../../saga/message/action';
 
-const ChatBox = ({ currentUser }) => {
+const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQueries, isLoading }) => {
+    const { query } = client;
     const textInput = useRef();
     const messageListRef = useRef();
-    const [messages, setMessages] = useState(null);
-    const [isLoading, setLoading] = useState(true);
+    const [messages, setMessages] = useState();
     const [muationCreateMessage] = useMutation(CREATE_MESSAGE);
-    const messageRespone = useQuery(GET_MESSAGES);
 
     useSubscription(MESSAGE_ADD_SUB, {
         onSubscriptionData: ({ _client, subscriptionData }) => {
@@ -31,12 +37,17 @@ const ChatBox = ({ currentUser }) => {
     });
 
     useEffect(() => {
-        if (!lodash.isEmpty(messageRespone) && !lodash.isEmpty(messageRespone.data)) {
-            const { loading, data } = messageRespone;
-            setLoading(loading);
-            setMessages(data.messages);
+        async function fetchMessage() {
+            if (roomSelected) {
+                const params = {
+                    room: [roomSelected._id],
+                };
+                await messageCall(query, params);
+                setMessages(messageQueries);
+            }
         }
-    }, [messageRespone, setMessages]);
+        fetchMessage();
+    }, [roomSelected]);
 
     const scrollToBottom = () => {
         const scrollHeight = messageListRef.current.scrollHeight;
@@ -46,12 +57,15 @@ const ChatBox = ({ currentUser }) => {
     };
 
     const onSubmit = useCallback(() => {
+        if (!roomSelected) {
+            return;
+        }
         const data = {
             user_id: {
                 _id: currentUser._id,
             },
             room_id: {
-                _id: '5deb471c64d66e7f78856798',
+                _id: roomSelected._id,
             },
             message_body: textInput.current.value,
             message_status: true,
@@ -62,7 +76,7 @@ const ChatBox = ({ currentUser }) => {
         return createMessageAction(data, muationCreateMessage).then(res => {
             textInput.current.value = '';
         });
-    }, []);
+    }, [roomSelected]);
 
     const isMyMessage = (username, _id) => {
         return (currentUser && lodash.isEqual(username, currentUser.username)) || lodash.isEqual(_id, currentUser._id);
@@ -133,23 +147,33 @@ const ChatBox = ({ currentUser }) => {
                         pad={{ top: 'small', bottom: 'small', left: 'small', right: 'small' }}
                         fill="horizontal"
                         flex="shrink"
-                        background={{ opacity: 'medium' }}
-                        hoverIndicator={true}>
-                        <Box align="center" justify="center" height="xxsmall" width="xxsmall" overflow="hidden" flex="grow" round="full">
-                            <Image src="https://photos.smugmug.com/Pinnacles-May-2019/n-8KLNDR/i-bxkrqwL/0/1c7fa7f2/M/i-bxkrqwL-M.jpg" />
-                        </Box>
-                        <Box
-                            align="stretch"
-                            justify="start"
-                            fill="horizontal"
-                            alignSelf="stretch"
-                            pad={{ left: 'small', right: 'small' }}
-                            direction="column">
-                            <Text weight="bold" size="small">
-                                {currentUser.username}
-                            </Text>
-                            <Text size="xsmall">Online</Text>
-                        </Box>
+                        background={{ opacity: 'medium' }}>
+                        {roomSelected && (
+                            <>
+                                <Box
+                                    align="center"
+                                    justify="center"
+                                    height="xxsmall"
+                                    width="xxsmall"
+                                    overflow="hidden"
+                                    flex="grow"
+                                    round="full">
+                                    <Image src="https://photos.smugmug.com/Pinnacles-May-2019/n-8KLNDR/i-bxkrqwL/0/1c7fa7f2/M/i-bxkrqwL-M.jpg" />
+                                </Box>
+                                <Box
+                                    align="stretch"
+                                    justify="start"
+                                    fill="horizontal"
+                                    alignSelf="stretch"
+                                    pad={{ left: 'small', right: 'small' }}
+                                    direction="column">
+                                    <Text weight="bold" size="small">
+                                        {roomSelected.name}
+                                    </Text>
+                                    <Text size="xsmall">{roomSelected.description}</Text>
+                                </Box>
+                            </>
+                        )}
                     </Box>
                 </Box>
                 <Box align="center" justify="center">
@@ -170,9 +194,11 @@ const ChatBox = ({ currentUser }) => {
                 justify="center"
                 fill="vertical"
                 alignSelf="stretch"
-                background={{
-                    image: "url('http://xpanthersolutions.com/admin-templates/gappa/html/dark/assets/images/authentication-bg.jpg')",
-                }}
+                background={
+                    {
+                        // image: "url('http://xpanthersolutions.com/admin-templates/gappa/html/dark/assets/images/authentication-bg.jpg')",
+                    }
+                }
                 direction="row-responsive"
                 overflow="hidden">
                 <Box
@@ -206,7 +232,20 @@ const ChatBox = ({ currentUser }) => {
 };
 
 ChatBox.propTypes = {
-    currentUser: PropTypes.object,
+    messageCall: PropTypes.func,
+    client: PropTypes.any,
+    data: PropTypes.array,
+    messageQueries: PropTypes.array,
 };
 
-export default memo(ChatBox);
+const mapStateToProps = createStructuredSelector({
+    roomSelected: makeSelectRoom(),
+    messageQueries: makeSelectMessages(),
+    isLoading: makeSelectLoadingMessages(),
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ messageCall }, dispatch);
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+export default withApollo(compose(withConnect, memo)(ChatBox));

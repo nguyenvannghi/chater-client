@@ -1,9 +1,21 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Box, Text, Button, Image, TextInput } from 'grommet';
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
+import { createStructuredSelector } from 'reselect';
+import { Box, Text, Button, TextInput } from 'grommet';
 import { Clear, Search, Chat, Archive, User, SettingsOption } from 'grommet-icons';
+import { roomCallSelected } from '../../saga/room/action';
+import { makeSelectRooms, makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
 
-const Sidebar = ({ rooms, isLoading }) => {
+const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected }) => {
+    const selectRoom = useCallback(
+        item => {
+            roomCallSelected(item);
+        },
+        [roomCallSelected],
+    );
+
     const renderRooms = () => {
         if (isLoading) return <>🐶 Fetching...</>;
         return (
@@ -20,8 +32,11 @@ const Sidebar = ({ rooms, isLoading }) => {
                         margin={{ bottom: 'xsmall' }}
                         fill="horizontal"
                         flex="shrink"
-                        background={{ color: index === 0 ? 'dark-3' : '', opacity: 'medium' }}
-                        hoverIndicator={true}>
+                        background={{ color: roomSelected && roomSelected._id === item._id ? 'dark-3' : '', opacity: 'medium' }}
+                        onClick={e => {
+                            selectRoom(item);
+                            e.preventDefault();
+                        }}>
                         <Box
                             align="center"
                             justify="center"
@@ -158,9 +173,27 @@ const Sidebar = ({ rooms, isLoading }) => {
 };
 
 Sidebar.propTypes = {
-    rooms: PropTypes.object,
+    roomCallSelected: PropTypes.func,
+    roomSelected: PropTypes.object,
+    rooms: PropTypes.array,
     currentUser: PropTypes.object,
     isLoading: PropTypes.bool,
 };
 
-export default memo(Sidebar);
+Sidebar.propTypes = {
+    roomCall: PropTypes.func,
+    client: PropTypes.any,
+    data: PropTypes.array,
+};
+
+const mapStateToProps = createStructuredSelector({
+    rooms: makeSelectRooms(),
+    roomSelected: makeSelectRoom(),
+    isLoading: makeSelectLoadingRooms(),
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ roomCallSelected }, dispatch);
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+export default compose(withConnect, memo)(Sidebar);

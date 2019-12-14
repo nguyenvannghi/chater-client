@@ -1,29 +1,28 @@
-import React, { memo, useState, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
+import { createStructuredSelector } from 'reselect';
 import { Box, Grid } from 'grommet';
-import * as lodash from 'lodash';
-import { useQuery } from '@apollo/react-hooks';
-import { GET_ROOMS } from 'app/containers/chater/graphql';
+import { withApollo } from 'react-apollo';
 import { getCurrentUser } from 'app/consts/helper';
+import { injectRoomSaga, injectMessageSaga } from './injectReducerSaga';
+import { roomCall } from './saga/room/action';
 import { ChatBox, Sidebar } from './components';
 
-const Chater = () => {
-    const [isLoading, setLoading] = useState(true);
-    const [rooms, setRooms] = useState(null);
+const Chater = ({ client, roomCall }) => {
+    injectRoomSaga();
+    injectMessageSaga();
 
+    const { query } = client;
     const currentUser = getCurrentUser();
-    const roomRespone = useQuery(GET_ROOMS, {
-        variables: {
-            users: [currentUser._id],
-        },
-    });
+    const params = {
+        users: [currentUser._id],
+    };
 
     useEffect(() => {
-        if (!lodash.isEmpty(roomRespone) && !lodash.isEmpty(roomRespone.data)) {
-            const { loading, data } = roomRespone;
-            setLoading(loading);
-            setRooms(data.rooms);
-        }
-    }, [roomRespone]);
+        roomCall(query, params);
+    }, [roomCall, query, params]);
 
     return (
         <Grid
@@ -35,7 +34,7 @@ const Chater = () => {
             columns={['medium', 'flex']}
             rows={['flex']}>
             <Box gridArea="nav" background="black" fill="vertical" alignSelf="stretch" direction="column">
-                <Sidebar currentUser={currentUser} rooms={rooms} isLoading={isLoading} />
+                <Sidebar currentUser={currentUser} />
             </Box>
             <Box gridArea="main" background="black" fill="vertical" alignSelf="stretch" direction="column">
                 <ChatBox currentUser={currentUser} />
@@ -44,4 +43,15 @@ const Chater = () => {
     );
 };
 
-export default memo(Chater);
+Chater.propTypes = {
+    roomCall: PropTypes.func,
+    client: PropTypes.any,
+};
+
+const mapStateToProps = createStructuredSelector({});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ roomCall }, dispatch);
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+export default withApollo(compose(withConnect, memo)(Chater));
