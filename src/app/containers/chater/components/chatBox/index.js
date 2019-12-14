@@ -30,7 +30,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                 const {
                     data: { messageAdded },
                 } = subscriptionData;
-                setMessages(prevMessage => [...prevMessage, messageAdded]);
+                setMessages(prevMessage => (prevMessage ? [...prevMessage, messageAdded] : [messageAdded]));
                 scrollToBottom();
             }
         },
