@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash';
-import { listCookieStorageName, setCookie } from 'app/_utils/cookieStorage';
+import { listCookieStorageName, setCookie, deleteCookie } from 'app/_utils/cookieStorage';
 import history from 'app/routes/history';
 
 const loginAction = async (data, mutation) => {
@@ -20,4 +20,10 @@ const loginAction = async (data, mutation) => {
     }
 };
 
-export { loginAction };
+const logoutAction = () => {
+    deleteCookie(listCookieStorageName.access_token);
+    deleteCookie(listCookieStorageName.token_type);
+    return history.push('/sign-in');
+};
+
+export { loginAction, logoutAction };

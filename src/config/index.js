@@ -9,16 +9,16 @@ export const envNameConfig = {
 
 const listConfigs = {
     [envNameConfig.dev]: {
-        API_SERVER: 'https://fakerestapi.azurewebsites.net/api',
+        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
     },
     [envNameConfig.qc]: {
-        API_SERVER: 'any',
+        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
     },
     [envNameConfig.uat]: {
-        API_SERVER: 'any',
+        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
     },
     [envNameConfig.production]: {
-        API_SERVER: 'any',
+        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
     },
 };
 

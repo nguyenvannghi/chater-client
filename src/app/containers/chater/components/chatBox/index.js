@@ -47,7 +47,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
             }
         }
         fetchMessage();
-    }, [roomSelected]);
+    }, [roomSelected, messageQueries]);
 
     const scrollToBottom = () => {
         const scrollHeight = messageListRef.current.scrollHeight;
@@ -84,7 +84,6 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
 
     const renderTimeMessage = (createdAt, updatedAt) =>
         updatedAt ? moment(createdAt).format(MOMENT.HOUR_MINUTES) : moment(updatedAt).format(MOMENT.HOUR_MINUTES);
-
     const renderMessage = () => {
         if (isLoading) return <>🐶 Fetching...</>;
         return (

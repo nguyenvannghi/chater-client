@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { Layer } from 'grommet';
 import { createStructuredSelector } from 'reselect';
 
 import makeSelectLoading from './selector';
@@ -16,7 +17,8 @@ const spinning = (
 );
 
 const LoadingApp = ({ isLoading }) => {
-    return isLoading ? spinning : '';
+    // return isLoading ? spinning : '';
+    return isLoading && <Layer>{spinning}</Layer>;
 };
 
 LoadingApp.propTypes = {

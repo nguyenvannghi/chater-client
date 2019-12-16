@@ -19,6 +19,7 @@ const Routers = () => {
     if (!isEmpty(getCookie(listCookieStorageName.access_token)) && !isLogin) {
         setIsLogin(true);
     }
+    console.log('isLogin == ', isLogin);
     return (
         <ConnectedRouter history={history}>
             <Suspense fallback={<div>Loading...</div>}>
@@ -63,6 +64,7 @@ const Routers = () => {
                             <Route path="/home">
                                 <Home />
                             </Route>
+                            <Redirect to="/" />
                         </Switch>
                     </>
                 )}

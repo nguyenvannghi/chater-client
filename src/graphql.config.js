@@ -7,6 +7,7 @@ import { getMainDefinition } from 'apollo-utilities';
 import { WebSocketLink } from 'apollo-link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { listCookieStorageName, getCookie } from 'app/_utils/cookieStorage';
+import { logoutAction } from 'app/containers/signin/services';
 const clientSub = new SubscriptionClient('ws://localhost:5002/subscriptions', {
     reconnect: true,
 });
@@ -34,9 +35,11 @@ const clientConfig = new ApolloClient({
     link: from([
         onError(({ graphQLErrors, networkError }) => {
             if (graphQLErrors)
-                graphQLErrors.forEach(({ message, locations, path }) =>
-                    console.error(`[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`),
-                );
+                graphQLErrors.forEach(({ message, statusCode }) => {
+                    if (statusCode === 401) {
+                        return logoutAction();
+                    }
+                });
             if (networkError) console.error(`[Network error]: ${networkError.message}`);
         }),
         link,

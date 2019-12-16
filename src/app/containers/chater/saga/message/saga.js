@@ -8,9 +8,7 @@ import * as nameConst from './const';
 
 const messageCallApi = (query, params) => {
     return query({ query: GET_MESSAGES, variables: params, fetchPolicy: FETCH_POLICY.NETWORK_ONLY })
-        .then(res => {
-            return res;
-        })
+        .then(res => res)
         .catch(err => err);
 };
 
