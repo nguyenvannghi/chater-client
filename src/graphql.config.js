@@ -7,7 +7,7 @@ import { getMainDefinition } from 'apollo-utilities';
 import { WebSocketLink } from 'apollo-link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { listCookieStorageName, getCookie } from 'app/_utils/cookieStorage';
-import { logoutAction } from 'app/containers/signin/services';
+import { logoutAction } from 'app/_services/authAction';
 const clientSub = new SubscriptionClient('ws://localhost:5002/subscriptions', {
     reconnect: true,
 });

@@ -9,6 +9,7 @@ import store from './app/stores';
 import Routes from './app/routes';
 import LoadingApp from './app/components/loadingApp';
 import Toast from './app/components/toast';
+import ConfirmPopup from './app/components/confirmPopup';
 
 import './styles/index.scss';
 
@@ -36,6 +37,7 @@ ReactDOM.render(
             <Grommet theme={theme} full>
                 <Toast />
                 <LoadingApp />
+                <ConfirmPopup />
                 <Routes />
             </Grommet>
         </Provider>

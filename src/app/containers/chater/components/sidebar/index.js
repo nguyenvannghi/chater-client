@@ -1,20 +1,34 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
+import * as lodash from 'lodash';
 import { createStructuredSelector } from 'reselect';
 import { Box, Text, Button, TextInput } from 'grommet';
 import { Clear, Search, Chat, Archive, User, SettingsOption } from 'grommet-icons';
+import { CONFIRM_ACTIONS } from 'app/consts';
+import { onCallConfirmAction } from 'app/components/confirmPopup/action';
+import { makeSelectStatusConfirmAction } from 'app/components/confirmPopup/selector';
+import { logoutCall } from 'app/containers/signin/saga/action';
 import { roomCallSelected } from '../../saga/room/action';
 import { makeSelectRooms, makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
 
-const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected }) => {
+const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected, onCallConfirmAction, confirmStatus, logoutCall }) => {
+    useEffect(() => {
+        if (!lodash.isEmpty(confirmStatus) && confirmStatus === CONFIRM_ACTIONS.PROCESS) {
+            logoutCall();
+        }
+    }, [confirmStatus, logoutCall]);
     const selectRoom = useCallback(
         item => {
             roomCallSelected(item);
         },
         [roomCallSelected],
     );
+
+    const logout = useCallback(() => {
+        onCallConfirmAction('Are you sure you want to log out?');
+    }, [onCallConfirmAction]);
 
     const renderRooms = () => {
         if (isLoading) return <>🐶 Fetching...</>;
@@ -76,99 +90,101 @@ const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected }) => {
     };
 
     return (
-        <Box
-            align="stretch"
-            justify="between"
-            fill="vertical"
-            alignSelf="stretch"
-            direction="column"
-            background={{ color: 'dark-1', dark: true }}
-            overflow="hidden"
-            flex="shrink">
+        <>
             <Box
-                align="center"
-                justify="center"
-                background={{ color: 'dark-1' }}
+                align="stretch"
+                justify="between"
+                fill="vertical"
                 alignSelf="stretch"
-                flex="grow"
-                border={{ color: 'dark-2', side: 'right' }}>
-                <Box
-                    align="center"
-                    justify="start"
-                    direction="row-responsive"
-                    alignSelf="stretch"
-                    pad={{ top: 'small', bottom: 'small', left: 'small', right: 'small' }}
-                    border={{ color: 'dark-2', side: 'bottom' }}>
-                    <Box align="center" justify="start" alignSelf="stretch" direction="row-responsive" flex="grow">
-                        <Box
-                            align="center"
-                            justify="center"
-                            height="xxsmall"
-                            width="xxsmall"
-                            overflow="hidden"
-                            round="xsmall"
-                            background={{
-                                position: 'center',
-                                size: 'contain',
-                                image:
-                                    'url("https://storage.googleapis.com/staging.kaiju-9f6ba.appspot.com/1576229280846-211-2113738_computer-icons-avatar-online-chat-download-png-all.png")',
-                            }}></Box>
-                        <Text size="xlarge" margin={{ left: 'small', right: 'small' }} weight="bold">
-                            Chater
-                        </Text>
-                    </Box>
-                    <Button icon={<Clear />} />
-                </Box>
+                direction="column"
+                background={{ color: 'dark-1', dark: true }}
+                overflow="hidden"
+                flex="shrink">
                 <Box
                     align="center"
                     justify="center"
-                    pad={{ top: 'small', bottom: 'small', left: 'small', right: 'small' }}
+                    background={{ color: 'dark-1' }}
                     alignSelf="stretch"
-                    border={{ color: 'dark-2', side: 'bottom' }}>
+                    flex="grow"
+                    border={{ color: 'dark-2', side: 'right' }}>
+                    <Box
+                        align="center"
+                        justify="start"
+                        direction="row-responsive"
+                        alignSelf="stretch"
+                        pad={{ top: 'small', bottom: 'small', left: 'small', right: 'small' }}
+                        border={{ color: 'dark-2', side: 'bottom' }}>
+                        <Box align="center" justify="start" alignSelf="stretch" direction="row-responsive" flex="grow">
+                            <Box
+                                align="center"
+                                justify="center"
+                                height="xxsmall"
+                                width="xxsmall"
+                                overflow="hidden"
+                                round="xsmall"
+                                background={{
+                                    position: 'center',
+                                    size: 'contain',
+                                    image:
+                                        'url("https://storage.googleapis.com/staging.kaiju-9f6ba.appspot.com/1576229280846-211-2113738_computer-icons-avatar-online-chat-download-png-all.png")',
+                                }}></Box>
+                            <Text size="xlarge" margin={{ left: 'small', right: 'small' }} weight="bold">
+                                Chater
+                            </Text>
+                        </Box>
+                        <Button icon={<Clear />} onClick={logout} />
+                    </Box>
                     <Box
                         align="center"
                         justify="center"
+                        pad={{ top: 'small', bottom: 'small', left: 'small', right: 'small' }}
+                        alignSelf="stretch"
+                        border={{ color: 'dark-2', side: 'bottom' }}>
+                        <Box
+                            align="center"
+                            justify="center"
+                            alignSelf="stretch"
+                            direction="row-responsive"
+                            round="small"
+                            border={{ color: 'dark-5' }}
+                            background={{ color: 'dark-2', dark: true }}
+                            height="xxsmall"
+                            pad={{ left: 'xsmall', right: 'small' }}>
+                            <TextInput placeholder="Search" plain={true} size="small" type="text" />
+                            <Button icon={<Search />} plain={true} />
+                        </Box>
+                    </Box>
+                </Box>
+                <Box align="center" justify="between" alignSelf="stretch" overflow="hidden" direction="row-responsive" fill="vertical">
+                    <Box
+                        align="stretch"
+                        justify="start"
                         alignSelf="stretch"
                         direction="row-responsive"
-                        round="small"
-                        border={{ color: 'dark-5' }}
-                        background={{ color: 'dark-2', dark: true }}
-                        height="xxsmall"
-                        pad={{ left: 'xsmall', right: 'small' }}>
-                        <TextInput placeholder="Search" plain={true} size="small" type="text" />
-                        <Button icon={<Search />} plain={true} />
+                        overflow="auto"
+                        pad={{ vertical: 'small' }}
+                        border={{ color: 'dark-2', side: 'right' }}
+                        wrap={true}>
+                        <Box align="stretch" justify="start" alignSelf="start" direction="row-responsive" overflow="auto" wrap={true}>
+                            {renderRooms()}
+                        </Box>
+                    </Box>
+                </Box>
+                <Box align="center" justify="center" border={{ color: 'dark-2', side: 'top' }}>
+                    <Box
+                        align="center"
+                        justify="between"
+                        direction="row-responsive"
+                        alignSelf="stretch"
+                        pad={{ left: 'small', right: 'small', vertical: 'small', top: 'small' }}>
+                        <Button icon={<Chat />} />
+                        <Button icon={<Archive />} />
+                        <Button icon={<User />} />
+                        <Button icon={<SettingsOption />} />
                     </Box>
                 </Box>
             </Box>
-            <Box align="center" justify="between" alignSelf="stretch" overflow="hidden" direction="row-responsive" fill="vertical">
-                <Box
-                    align="stretch"
-                    justify="start"
-                    alignSelf="stretch"
-                    direction="row-responsive"
-                    overflow="auto"
-                    pad={{ vertical: 'small' }}
-                    border={{ color: 'dark-2', side: 'right' }}
-                    wrap={true}>
-                    <Box align="stretch" justify="start" alignSelf="start" direction="row-responsive" overflow="auto" wrap={true}>
-                        {renderRooms()}
-                    </Box>
-                </Box>
-            </Box>
-            <Box align="center" justify="center" border={{ color: 'dark-2', side: 'top' }}>
-                <Box
-                    align="center"
-                    justify="between"
-                    direction="row-responsive"
-                    alignSelf="stretch"
-                    pad={{ left: 'small', right: 'small', vertical: 'small', top: 'small' }}>
-                    <Button icon={<Chat />} />
-                    <Button icon={<Archive />} />
-                    <Button icon={<User />} />
-                    <Button icon={<SettingsOption />} />
-                </Box>
-            </Box>
-        </Box>
+        </>
     );
 };
 
@@ -178,21 +194,23 @@ Sidebar.propTypes = {
     rooms: PropTypes.array,
     currentUser: PropTypes.object,
     isLoading: PropTypes.bool,
-};
-
-Sidebar.propTypes = {
+    logoutAction: PropTypes.func,
     roomCall: PropTypes.func,
     client: PropTypes.any,
     data: PropTypes.array,
+    onCallConfirmAction: PropTypes.func,
+    logoutCall: PropTypes.func,
+    confirmStatus: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
     rooms: makeSelectRooms(),
     roomSelected: makeSelectRoom(),
     isLoading: makeSelectLoadingRooms(),
+    confirmStatus: makeSelectStatusConfirmAction(),
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ roomCallSelected }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ roomCallSelected, onCallConfirmAction, logoutCall }, dispatch);
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

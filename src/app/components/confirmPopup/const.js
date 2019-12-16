@@ -1,0 +1,5 @@
+import { APP_COMMON } from 'app/consts';
+
+export const COMMON_CALL_CONFIRM_ACTION = `${APP_COMMON}_CALL_CONFIRM_ACTION`;
+export const COMMON_OK_ACTION = `${APP_COMMON}_OK_ACTION`;
+export const COMMON_CANCEL_ACTION = `${APP_COMMON}_CANCEL_ACTION`;

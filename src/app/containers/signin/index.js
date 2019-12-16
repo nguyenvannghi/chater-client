@@ -1,18 +1,26 @@
 import React, { useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
-import { useMutation } from '@apollo/react-hooks';
+import { connect } from 'react-redux';
+import { compose, bindActionCreators } from 'redux';
+import { createStructuredSelector } from 'reselect';
+import { withApollo } from 'react-apollo';
 import { Text, Box, Form, Button, Heading, FormField, TextInput } from 'grommet';
 import useForm from 'react-hook-form';
 import { FIELDS_SIGNIN } from './const';
 import SignInSchema from './validators';
-import { LOGIN } from './graphql/mutations';
-import { loginAction } from './services';
+import { loginCall } from './saga/action';
+import injectReducerSaga from './injectReducerSaga';
 
-const SignIn = () => {
+const SignIn = ({ client, loginCall }) => {
+    // injectReducerSaga();
+    const { mutate } = client;
     const { register, handleSubmit, errors, watch } = useForm({ mode: 'onChange', validationSchema: SignInSchema });
-    const [muationLogin] = useMutation(LOGIN);
-
-    const onSubmit = useCallback(data => loginAction(data, muationLogin), [muationLogin]);
+    const onSubmit = useCallback(
+        data => {
+            loginCall(mutate, data);
+        },
+        [loginCall, mutate],
+    );
     const disabledBtn = !!(
         errors[FIELDS_SIGNIN.NAME] ||
         errors[FIELDS_SIGNIN.PASSWORD] ||
@@ -70,6 +78,13 @@ const SignIn = () => {
 
 SignIn.propTypes = {
     SignInCall: PropTypes.func,
+    loginCall: PropTypes.func,
 };
 
-export default memo(SignIn);
+const mapStateToProps = createStructuredSelector({});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ loginCall }, dispatch);
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+export default withApollo(compose(withConnect, memo)(SignIn));

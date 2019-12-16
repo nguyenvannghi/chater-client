@@ -34,3 +34,8 @@ export const FETCH_POLICY = {
     CACHE_ONLY: 'cache-only',
     NO_CACHE: 'no-cache',
 };
+
+export const CONFIRM_ACTIONS = {
+    PROCESS: 'PROCESS',
+    CANCEL: 'CANCEL',
+};

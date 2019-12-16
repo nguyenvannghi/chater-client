@@ -1,12 +1,15 @@
-import React, { memo, lazy, Suspense, useState } from 'react';
+import React, { memo, lazy, Suspense, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { compose, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
-import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { isEmpty } from 'lodash';
 import history from './history';
 import { listCookieStorageName, getCookie } from '../_utils/cookieStorage';
+import { makeSelectLoginStatus } from 'app/containers/signin/saga/selector';
+import { loginCallSuccess } from 'app/containers/signin/saga/action';
 
 // not support for server-side rendering
 const Home = lazy(() => import('app/containers/home'));
@@ -14,12 +17,21 @@ const About = lazy(() => import('app/containers/about'));
 const SignIn = lazy(() => import('app/containers/signin'));
 const Chater = lazy(() => import('app/containers/chater'));
 
-const Routers = () => {
+const Routers = ({ isLoginStatus, loginCallSuccess }) => {
     const [isLogin, setIsLogin] = useState(false);
-    if (!isEmpty(getCookie(listCookieStorageName.access_token)) && !isLogin) {
-        setIsLogin(true);
-    }
-    console.log('isLogin == ', isLogin);
+
+    useEffect(() => {
+        console.log(123);
+        if (!isEmpty(getCookie(listCookieStorageName.access_token))) {
+            setIsLogin(true);
+            if (!isLoginStatus) {
+                loginCallSuccess();
+            }
+        } else {
+            setIsLogin(isLoginStatus);
+        }
+    }, [isLoginStatus, setIsLogin, isLogin, loginCallSuccess]);
+
     return (
         <ConnectedRouter history={history}>
             <Suspense fallback={<div>Loading...</div>}>
@@ -73,8 +85,17 @@ const Routers = () => {
     );
 };
 
-const mapStateToProps = createStructuredSelector({});
+Routers.propTypes = {
+    isLoginStatus: PropTypes.bool,
+    loginCallSuccess: PropTypes.func,
+};
 
-const withConnect = connect(mapStateToProps);
+const mapStateToProps = createStructuredSelector({
+    isLoginStatus: makeSelectLoginStatus(),
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({ loginCallSuccess }, dispatch);
+
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
 export default compose(withConnect, memo)(Routers);

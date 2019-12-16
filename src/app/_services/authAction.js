@@ -16,7 +16,7 @@ const loginAction = async (data, mutation) => {
             }
         });
     } catch (error) {
-        console.log(error);
+        throw new Error(error);
     }
 };
 
