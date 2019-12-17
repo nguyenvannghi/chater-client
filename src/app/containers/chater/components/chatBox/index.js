@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { Box, Text, Button, Image, TextArea } from 'grommet';
+import { Box, Text, Button, TextArea } from 'grommet';
 import { AddCircle, Camera, Apps, Attachment, Add } from 'grommet-icons';
 import { useSubscription, useMutation } from '@apollo/react-hooks';
 import { withApollo } from 'react-apollo';
@@ -35,21 +35,20 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
             }
         },
     });
-
     useEffect(() => {
         if (roomSelected) {
             setMessages(null);
             async function fetchMessage() {
                 const params = {
                     room: roomSelected._id,
-                    users: [currentUser._id],
+                    sender: [currentUser._id],
                 };
                 await messageCall(query, params);
                 setMessages(messageQueries);
             }
             fetchMessage();
         }
-    }, [roomSelected]);
+    }, [roomSelected, messageCall, messageQueries]);
 
     const scrollToBottom = () => {
         const scrollHeight = messageListRef.current.scrollHeight;
@@ -126,7 +125,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
         <Box
             align="center"
             justify="start"
-            fill="horizontal"
+            fill="vertical"
             alignSelf="stretch"
             background={{ dark: true, color: 'dark-1' }}
             overflow="hidden"
@@ -158,9 +157,12 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                                     width="xxsmall"
                                     overflow="hidden"
                                     flex="grow"
-                                    round="full">
-                                    <Image src="https://photos.smugmug.com/Pinnacles-May-2019/n-8KLNDR/i-bxkrqwL/0/1c7fa7f2/M/i-bxkrqwL-M.jpg" />
-                                </Box>
+                                    background={{
+                                        image: `url('${roomSelected.image_url}')`,
+                                        position: 'center',
+                                        size: 'contain',
+                                    }}
+                                    round="full"></Box>
                                 <Box
                                     align="stretch"
                                     justify="start"
@@ -192,7 +194,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
             </Box>
             <Box
                 align="center"
-                justify="center"
+                justify="start"
                 fill="vertical"
                 alignSelf="stretch"
                 background={
@@ -207,8 +209,9 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                     justify="start"
                     direction="row-responsive"
                     pad="small"
+                    fill="horizontal"
                     overflow="auto"
-                    alignSelf="stretch"
+                    alignSelf="start"
                     wrap={true}
                     ref={messageListRef}>
                     {renderMessage()}

@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 const GET_ROOMS = gql`
-    query getRooms($where: Where) {
+    query getRooms($where: JSON) {
         rooms(where: $where) {
             _id
             users {
@@ -15,7 +15,7 @@ const GET_ROOMS = gql`
     }
 `;
 const GET_MESSAGES = gql`
-    query getMessages($where: Where) {
+    query getMessages($where: JSON) {
         messages(where: $where) {
             _id
             room {
