@@ -1,5 +1,6 @@
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import apolloLogger from 'apollo-link-logger';
 import { ApolloLink, concat, split, from } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 import { ApolloClient } from 'apollo-client';
@@ -31,8 +32,11 @@ const link = split(
     wsLink,
     concat(authMiddleware, httpLink),
 );
+
+const cache = new InMemoryCache();
 const clientConfig = new ApolloClient({
     link: from([
+        apolloLogger,
         onError(({ graphQLErrors, networkError }) => {
             if (graphQLErrors)
                 graphQLErrors.forEach(({ message, statusCode }) => {
@@ -44,7 +48,7 @@ const clientConfig = new ApolloClient({
         }),
         link,
     ]),
-    cache: new InMemoryCache(),
+    cache,
 });
 
 export default clientConfig;

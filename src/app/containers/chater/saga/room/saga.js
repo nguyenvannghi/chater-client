@@ -21,9 +21,9 @@ function* roomSaga() {
         if (result && !result.data) {
             yield put(nameEvents.roomCalFailed(result));
         } else {
-            const { rooms } = result.data;
+            // const { rooms } = result.data;
             yield put(nameEvents.roomCallSuccess(result));
-            yield put(nameEvents.roomCallSelectedSuccess(rooms[0]));
+            // yield put(nameEvents.roomCallSelectedSuccess(rooms[0]));
         }
 
         yield put(loadingClose());

@@ -7,8 +7,10 @@ import * as nameEvents from './action';
 import * as nameConst from './const';
 
 const messageCallApi = (query, params) => {
-    return query({ query: GET_MESSAGES, variables: params, fetchPolicy: FETCH_POLICY.NETWORK_ONLY })
-        .then(res => res)
+    return query({ query: GET_MESSAGES, fetchPolicy: FETCH_POLICY.NETWORK_ONLY, variables: { where: params } })
+        .then(res => {
+            return res;
+        })
         .catch(err => err);
 };
 

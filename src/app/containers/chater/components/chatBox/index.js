@@ -37,17 +37,19 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
     });
 
     useEffect(() => {
-        async function fetchMessage() {
-            if (roomSelected) {
+        if (roomSelected) {
+            setMessages(null);
+            async function fetchMessage() {
                 const params = {
-                    room: [roomSelected._id],
+                    room: roomSelected._id,
+                    users: [currentUser._id],
                 };
                 await messageCall(query, params);
                 setMessages(messageQueries);
             }
+            fetchMessage();
         }
-        fetchMessage();
-    }, [roomSelected, messageQueries]);
+    }, [roomSelected]);
 
     const scrollToBottom = () => {
         const scrollHeight = messageListRef.current.scrollHeight;
