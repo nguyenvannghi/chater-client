@@ -1,24 +1,16 @@
-import React, { memo, useCallback, useEffect } from 'react';
+import React, { memo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
-import * as lodash from 'lodash';
 import { createStructuredSelector } from 'reselect';
 import { Box, Text, Button, TextInput } from 'grommet';
 import { Clear, Search, Chat, Archive, User, SettingsOption } from 'grommet-icons';
-import { CONFIRM_ACTIONS } from 'app/consts';
 import { onCallConfirmAction } from 'app/components/confirmPopup/action';
 import { makeSelectStatusConfirmAction } from 'app/components/confirmPopup/selector';
-import { logoutCall } from 'app/containers/signin/saga/action';
 import { roomCallSelected } from '../../saga/room/action';
 import { makeSelectRooms, makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
 
-const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected, onCallConfirmAction, confirmStatus, logoutCall }) => {
-    useEffect(() => {
-        if (!lodash.isEmpty(confirmStatus) && confirmStatus === CONFIRM_ACTIONS.PROCESS) {
-            logoutCall();
-        }
-    }, [confirmStatus, logoutCall]);
+const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected, onCallConfirmAction }) => {
     const selectRoom = useCallback(
         item => {
             roomCallSelected(item);
@@ -210,7 +202,7 @@ const mapStateToProps = createStructuredSelector({
     confirmStatus: makeSelectStatusConfirmAction(),
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ roomCallSelected, onCallConfirmAction, logoutCall }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ roomCallSelected, onCallConfirmAction }, dispatch);
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

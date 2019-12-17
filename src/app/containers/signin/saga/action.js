@@ -15,8 +15,8 @@ export const loginCallSuccess = data => ({
     isLogin: true,
 });
 
-export const loginCalFailed = error => ({
-    type: nameConst.LOGIN_CALL_FAILED,
+export const loginCallCancelled = error => ({
+    type: nameConst.LOGIN_CALL_CANCELLED,
     isLogin: false,
     ...error,
 });

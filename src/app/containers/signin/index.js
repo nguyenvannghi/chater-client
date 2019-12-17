@@ -9,10 +9,8 @@ import useForm from 'react-hook-form';
 import { FIELDS_SIGNIN } from './const';
 import SignInSchema from './validators';
 import { loginCall } from './saga/action';
-import injectReducerSaga from './injectReducerSaga';
 
 const SignIn = ({ client, loginCall }) => {
-    // injectReducerSaga();
     const { mutate } = client;
     const { register, handleSubmit, errors, watch } = useForm({ mode: 'onChange', validationSchema: SignInSchema });
     const onSubmit = useCallback(

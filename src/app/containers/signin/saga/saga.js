@@ -1,11 +1,13 @@
-import { put, take, call, fork, delay } from 'redux-saga/effects';
+import { put, take, call, fork, all } from 'redux-saga/effects';
 import { loadingOpen, loadingClose } from 'app/components/loadingApp/action';
 import { isEmpty } from 'lodash';
 import { listCookieStorageName, setCookie, deleteCookie } from 'app/_utils/cookieStorage';
-import { LOGIN } from '../graphql/mutations';
-
+import * as nameConfirmConst from 'app/components/confirmPopup/const';
+import { CONFIRM_ACTIONS } from 'app/consts';
 import * as nameEvents from './action';
 import * as nameConst from './const';
+
+import { LOGIN } from '../graphql/mutations';
 
 const loginCallApi = (mutation, params) => {
     return mutation({ mutation: LOGIN, variables: params })
@@ -21,7 +23,7 @@ function* loginSaga() {
         yield put(loadingOpen());
         const result = yield call(loginCallApi, mutation, params);
         if (result && !result.data) {
-            yield put(nameEvents.loginCalFailed(result));
+            yield put(nameEvents.loginCallCancelled(result));
         } else {
             yield put(nameEvents.loginCallSuccess(result));
             if (!isEmpty(result) && !isEmpty(result.data)) {
@@ -37,17 +39,15 @@ function* loginSaga() {
 
 function* logoutSaga() {
     while (true) {
-        console.log(yield take(nameConst.LOGOUT_CALL));
-        yield take(nameConst.LOGOUT_CALL);
-        deleteCookie(listCookieStorageName.access_token);
-        deleteCookie(listCookieStorageName.token_type);
-        yield delay(1000);
-        yield put(nameEvents.loginCalFailed(null));
-        return;
+        const data = yield take(nameConfirmConst.COMMON_OK_ACTION);
+        if (data.data === CONFIRM_ACTIONS.PROCESS) {
+            deleteCookie(listCookieStorageName.access_token);
+            deleteCookie(listCookieStorageName.token_type);
+            yield put(nameEvents.loginCallCancelled(null));
+        }
     }
 }
 
 export default function* root() {
-    yield fork(loginSaga);
-    yield fork(logoutSaga);
+    yield all([fork(loginSaga), fork(logoutSaga)]);
 }

@@ -21,7 +21,6 @@ const Routers = ({ isLoginStatus, loginCallSuccess }) => {
     const [isLogin, setIsLogin] = useState(false);
 
     useEffect(() => {
-        console.log(123);
         if (!isEmpty(getCookie(listCookieStorageName.access_token))) {
             setIsLogin(true);
             if (!isLoginStatus) {

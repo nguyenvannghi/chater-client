@@ -4,7 +4,7 @@ import { routerMiddleware } from 'connected-react-router';
 
 import ENV, { envNameConfig } from '../../config';
 import createReducer from '../reducers';
-// import rootSaga from '../saga';
+import rootSaga from '../saga';
 import history from '../routes/history';
 
 const storeConfig = (initialState = {}) => {
@@ -31,7 +31,7 @@ const storeConfig = (initialState = {}) => {
 
     const store = createStore(createReducer(), initialState, composeEnhancers(...enhancers));
 
-    // sagaMiddleware.run(rootSaga);
+    sagaMiddleware.run(rootSaga);
 
     store.runSaga = sagaMiddleware.run;
 

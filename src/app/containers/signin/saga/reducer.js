@@ -14,7 +14,7 @@ const loginReducer = (state = initialState, action) =>
                 draft.isLogin = true;
                 draft.error = initialState.error;
                 return draft;
-            case nameConst.LOGIN_CALL_FAILED:
+            case nameConst.LOGIN_CALL_CANCELLED:
                 draft.isLogin = false;
                 draft.error = action.error;
                 return draft;

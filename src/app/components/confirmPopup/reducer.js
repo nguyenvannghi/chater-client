@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { COMMON_CALL_CONFIRM_ACTION, COMMON_OK_ACTION, COMMON_CANCEL_ACTION } from './const';
+import { COMMON_CALL_CONFIRM_ACTION, COMMON_OK_ACTION, COMMON_CANCEL_ACTION, COMMON_RESET_ACTION } from './const';
 
 export const initialState = {
     data: null,
@@ -34,6 +34,7 @@ const ActionConfirm = (state = initialState, action) => {
                 draft.actions = initialState.actions;
                 draft.isClose = true;
             });
+        case COMMON_RESET_ACTION:
         default:
             return state;
     }
