@@ -8,11 +8,11 @@ import { debounce } from 'lodash';
 import { createStructuredSelector } from 'reselect';
 import ToastLayer from 'app/components/toast-layer';
 import { MONGO_OPS } from 'app/consts';
-import { GET_USERS } from '../../graphql/user/queries';
-const AddPeoplePopup = ({ client, isOpen }) => {
+import { userCall } from '../../saga/user/action';
+const AddPeoplePopup = ({ client, isOpen, userCall }) => {
     const { query } = client;
     const debouncedSave = useRef(
-        debounce(value => {
+        debounce(async value => {
             const params = {
                 where: {
                     username: {
@@ -21,14 +21,11 @@ const AddPeoplePopup = ({ client, isOpen }) => {
                     },
                 },
             };
-            query({ query: GET_USERS, variables: params })
-                .then(res => {
-                    return res;
-                })
-                .catch(err => err);
+            await userCall(query, params);
         }),
-        500,
+        100,
     );
+
     return (
         isOpen && (
             <ToastLayer position="center" modal>
@@ -41,23 +38,12 @@ const AddPeoplePopup = ({ client, isOpen }) => {
                             placeholder="Yian, @steve, name@example.com"
                             onChange={({ target: { value } }) => debouncedSave.current(value)}
                         />
-                        {/* <DropButton
-                            plain={true}
-                            label={
-                                <Box align="center" justify="stretch">
-                                    <TextInput placeholder="Yian, @steve, name@example.com" ref={searchInput} onKeyDown={onKeyDown()} />
-                                </Box>
-                            }
-                            dropAlign={{ top: 'bottom', right: 'right' }}
-                            dropContent={
-                                <Box background="white" pad={{ top: 'xsmall', bottom: 'xsmall', left: 'small', right: 'small' }}>
-                                    <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                                    <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                                    <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                                    <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                                </Box>
-                            }
-                        /> */}
+                        {/* <Box background="white" pad={{ top: 'xsmall', bottom: 'xsmall', left: 'small', right: 'small' }}>
+                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
+                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
+                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
+                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
+                        </Box> */}
                     </Box>
                     <Box width="small" margin="none" direction="row-responsive" pad={{ bottom: 'small' }}>
                         <Box pad={{ left: 'xsmall', right: 'xsmall' }}>
@@ -78,13 +64,14 @@ AddPeoplePopup.defaultProps = {
 };
 
 AddPeoplePopup.propTypes = {
+    userCall: PropTypes.func,
     onResetAction: PropTypes.func,
     isOpen: PropTypes.bool,
 };
 
 const mapStateToProps = createStructuredSelector({});
 
-const mapDispatchToProps = dispatch => bindActionCreators({}, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ userCall }, dispatch);
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

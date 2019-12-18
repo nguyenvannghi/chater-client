@@ -7,13 +7,14 @@ import { Box, Grid } from 'grommet';
 import { withApollo } from 'react-apollo';
 import { getCurrentUser } from 'app/consts/helper';
 import { MONGO_OPS } from 'app/consts';
-import { injectRoomSaga, injectMessageSaga } from './injectReducerSaga';
+import { injectRoomSaga, injectMessageSaga, injectUserSaga } from './injectReducerSaga';
 import { roomCall } from './saga/room/action';
 import { ChatBox, Sidebar } from './components';
 
 const Chater = ({ client, roomCall }) => {
     injectRoomSaga();
     injectMessageSaga();
+    injectUserSaga();
 
     const { query } = client;
     const currentUser = getCurrentUser();
