@@ -26,7 +26,7 @@ const roomReducer = (state = initialState, action) =>
                 draft.error = initialState.error;
                 return draft;
             case nameConst.ROOM_CALL_FAILED:
-                draft.data = initialState.data;
+                draft.rooms = initialState.rooms;
                 draft.isLoading = initialState.isLoading;
                 draft.error = action.error;
                 return draft;

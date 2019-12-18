@@ -4,15 +4,16 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { Box, Text, Button, TextArea } from 'grommet';
+import { Box, Text, Button, TextArea, Menu } from 'grommet';
 import { AddCircle, Camera, Apps, Attachment, Add } from 'grommet-icons';
 import { useSubscription, useMutation } from '@apollo/react-hooks';
 import { withApollo } from 'react-apollo';
 import * as lodash from 'lodash';
 import * as moment from 'moment';
 import { MESSAGE_ADD_SUB, CREATE_MESSAGE } from 'app/containers/chater/graphql';
-import { MOMENT } from 'app/consts';
+import { MOMENT, MONGO_OPS } from 'app/consts';
 import { createMessageAction } from '../../service';
+import AddPeoplePopup from '../add-people';
 import { makeSelectRoom } from '../../saga/room/selector';
 import { makeSelectMessages, makeSelectLoadingMessages } from '../../saga/message/selector';
 import { messageCall } from '../../saga/message/action';
@@ -21,6 +22,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
     const { query } = client;
     const textInput = useRef();
     const messageListRef = useRef();
+    const [isOpenAddPeople, setOpenAddPeople] = useState(false);
     const [messages, setMessages] = useState();
     const [muationCreateMessage] = useMutation(CREATE_MESSAGE);
 
@@ -40,8 +42,14 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
             setMessages(null);
             async function fetchMessage() {
                 const params = {
-                    room: roomSelected._id,
-                    sender: [currentUser._id],
+                    room: {
+                        op: MONGO_OPS.EQUA,
+                        value: roomSelected._id,
+                    },
+                    sender: {
+                        op: MONGO_OPS.EQUA,
+                        value: currentUser._id,
+                    },
                 };
                 await messageCall(query, params);
                 setMessages(messageQueries);
@@ -122,116 +130,135 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
         );
     };
     return (
-        <Box
-            align="center"
-            justify="start"
-            fill="vertical"
-            alignSelf="stretch"
-            background={{ dark: true, color: 'dark-1' }}
-            overflow="hidden"
-            flex="shrink">
-            <Box
-                align="center"
-                justify="between"
-                direction="row-responsive"
-                alignSelf="stretch"
-                border={{ color: 'dark-2', side: 'bottom' }}
-                fill="horizontal"
-                flex="grow">
-                <Box align="center" justify="center" flex="shrink">
-                    <Box
-                        align="center"
-                        justify="start"
-                        direction="row-responsive"
-                        alignSelf="stretch"
-                        pad={{ top: 'small', bottom: 'small', left: 'small', right: 'small' }}
-                        fill="horizontal"
-                        flex="shrink"
-                        background={{ opacity: 'medium' }}>
-                        {roomSelected && (
-                            <>
-                                <Box
-                                    align="center"
-                                    justify="center"
-                                    height="xxsmall"
-                                    width="xxsmall"
-                                    overflow="hidden"
-                                    flex="grow"
-                                    background={{
-                                        image: `url('${roomSelected.image_url}')`,
-                                        position: 'center',
-                                        size: 'contain',
-                                    }}
-                                    round="full"></Box>
-                                <Box
-                                    align="stretch"
-                                    justify="start"
-                                    fill="horizontal"
-                                    alignSelf="stretch"
-                                    pad={{ left: 'small', right: 'small' }}
-                                    direction="column">
-                                    <Text weight="bold" size="small">
-                                        {roomSelected.name}
-                                    </Text>
-                                    <Text size="xsmall">{roomSelected.description}</Text>
-                                </Box>
-                            </>
-                        )}
-                    </Box>
-                </Box>
-                <Box align="center" justify="center">
-                    <Box
-                        align="center"
-                        justify="between"
-                        direction="row-responsive"
-                        alignSelf="stretch"
-                        pad={{ left: 'small', right: 'small', vertical: 'small', top: 'small' }}>
-                        <Button icon={<AddCircle />} />
-                        <Button icon={<Camera />} />
-                        <Button icon={<Apps />} />
-                    </Box>
-                </Box>
-            </Box>
+        <>
             <Box
                 align="center"
                 justify="start"
                 fill="vertical"
                 alignSelf="stretch"
-                background={
-                    {
-                        // image: "url('http://xpanthersolutions.com/admin-templates/gappa/html/dark/assets/images/authentication-bg.jpg')",
-                    }
-                }
-                direction="row-responsive"
-                overflow="hidden">
-                <Box
-                    align="stretch"
-                    justify="start"
-                    direction="row-responsive"
-                    pad="small"
-                    fill="horizontal"
-                    overflow="auto"
-                    alignSelf="start"
-                    wrap={true}
-                    ref={messageListRef}>
-                    {renderMessage()}
-                </Box>
-            </Box>
-            <Box align="center" justify="start" alignSelf="stretch" border={{ color: 'dark-2', side: 'top' }}>
+                background={{ dark: true, color: 'dark-1' }}
+                overflow="hidden"
+                flex="shrink">
                 <Box
                     align="center"
-                    justify="center"
+                    justify="between"
                     direction="row-responsive"
-                    fill="horizontal"
-                    flex="grow"
                     alignSelf="stretch"
-                    border={{ color: 'dark-2', side: 'left' }}>
-                    <TextArea plain={true} size="small" placeholder="Type a message..." ref={textInput} />
-                    <Button icon={<Attachment />} />
-                    <Button icon={<Add />} onClick={onSubmit} />
+                    border={{ color: 'dark-2', side: 'bottom' }}
+                    fill="horizontal"
+                    flex="grow">
+                    <Box align="center" justify="center" flex="shrink">
+                        <Box
+                            align="center"
+                            justify="start"
+                            direction="row-responsive"
+                            alignSelf="stretch"
+                            pad={{ top: 'small', bottom: 'small', left: 'small', right: 'small' }}
+                            fill="horizontal"
+                            flex="shrink"
+                            background={{ opacity: 'medium' }}>
+                            {roomSelected && (
+                                <>
+                                    <Box
+                                        align="center"
+                                        justify="center"
+                                        height="xxsmall"
+                                        width="xxsmall"
+                                        overflow="hidden"
+                                        flex="grow"
+                                        background={{
+                                            image: `url('${roomSelected.image_url}')`,
+                                            position: 'center',
+                                            size: 'contain',
+                                        }}
+                                        round="full"></Box>
+                                    <Box
+                                        align="stretch"
+                                        justify="start"
+                                        fill="horizontal"
+                                        alignSelf="stretch"
+                                        pad={{ left: 'small', right: 'small' }}
+                                        direction="column">
+                                        {/* <Text weight="bold" size="small">
+                                        {roomSelected.name}
+                                    </Text> */}
+
+                                        <Menu
+                                            open={false}
+                                            items={[
+                                                {
+                                                    label: 'Add people to channel',
+                                                    onClick: () => {
+                                                        setOpenAddPeople(true);
+                                                    },
+                                                },
+                                                { label: `Leave #${roomSelected.name}`, onClick: () => {} },
+                                            ]}
+                                            label={roomSelected.name}
+                                        />
+                                        <Text size="xsmall" margin={{ left: 'small' }}>
+                                            {roomSelected.description}
+                                        </Text>
+                                    </Box>
+                                </>
+                            )}
+                        </Box>
+                    </Box>
+                    <Box align="center" justify="center">
+                        <Box
+                            align="center"
+                            justify="between"
+                            direction="row-responsive"
+                            alignSelf="stretch"
+                            pad={{ left: 'small', right: 'small', vertical: 'small', top: 'small' }}>
+                            <Button icon={<AddCircle />} />
+                            <Button icon={<Camera />} />
+                            <Button icon={<Apps />} />
+                        </Box>
+                    </Box>
+                </Box>
+                <Box
+                    align="center"
+                    justify="start"
+                    fill="vertical"
+                    alignSelf="stretch"
+                    background={
+                        {
+                            // image: "url('http://xpanthersolutions.com/admin-templates/gappa/html/dark/assets/images/authentication-bg.jpg')",
+                        }
+                    }
+                    direction="row-responsive"
+                    overflow="hidden">
+                    <Box
+                        align="stretch"
+                        justify="start"
+                        direction="row-responsive"
+                        pad="small"
+                        fill="horizontal"
+                        overflow="auto"
+                        alignSelf="start"
+                        wrap={true}
+                        ref={messageListRef}>
+                        {renderMessage()}
+                    </Box>
+                </Box>
+                <Box align="center" justify="start" alignSelf="stretch" border={{ color: 'dark-2', side: 'top' }}>
+                    <Box
+                        align="center"
+                        justify="center"
+                        direction="row-responsive"
+                        fill="horizontal"
+                        flex="grow"
+                        alignSelf="stretch"
+                        border={{ color: 'dark-2', side: 'left' }}>
+                        <TextArea plain={true} size="small" placeholder="Type a message..." ref={textInput} />
+                        <Button icon={<Attachment />} />
+                        <Button icon={<Add />} onClick={onSubmit} />
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+            <AddPeoplePopup isOpen={isOpenAddPeople} />
+        </>
     );
 };
 

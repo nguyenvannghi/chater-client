@@ -6,6 +6,7 @@ import { createStructuredSelector } from 'reselect';
 import { Box, Grid } from 'grommet';
 import { withApollo } from 'react-apollo';
 import { getCurrentUser } from 'app/consts/helper';
+import { MONGO_OPS } from 'app/consts';
 import { injectRoomSaga, injectMessageSaga } from './injectReducerSaga';
 import { roomCall } from './saga/room/action';
 import { ChatBox, Sidebar } from './components';
@@ -17,7 +18,10 @@ const Chater = ({ client, roomCall }) => {
     const { query } = client;
     const currentUser = getCurrentUser();
     const params = {
-        users: [currentUser._id],
+        users: {
+            op: MONGO_OPS.EQUA,
+            value: currentUser._id,
+        },
     };
 
     useEffect(() => {

@@ -39,3 +39,22 @@ export const CONFIRM_ACTIONS = {
     PROCESS: 'PROCESS',
     CANCEL: 'CANCEL',
 };
+
+export const MONGO_OPS = {
+    LIKE: '$like',
+    EQUA: '$eq',
+    GREATER_THAN: '$gt',
+    GREATER_THAN_OR_EQUA: '$gte',
+    IN: '$in',
+    LESS_THAN: '$lt',
+    LESS_THAN_OR_EQUA: '$lte',
+    NOT_EQUA: '$ne',
+    NOT_IN: '$nin',
+};
+
+export const MONGO_LOGIS = {
+    AND: '$and',
+    NOT: '$not',
+    NOR: '$nor',
+    OR: '$or',
+};
