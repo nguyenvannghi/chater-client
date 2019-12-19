@@ -4,24 +4,28 @@ import { connect } from 'react-redux';
 import { withApollo } from 'react-apollo';
 import { compose, bindActionCreators } from 'redux';
 import { Box, Button, Text, TextInput } from 'grommet';
+import { Actions } from 'grommet-icons';
 import { debounce } from 'lodash';
 import { createStructuredSelector } from 'reselect';
 import ToastLayer from 'app/components/toast-layer';
 import { MONGO_OPS } from 'app/consts';
 import { userCall } from '../../saga/user/action';
-const AddPeoplePopup = ({ client, isOpen, userCall }) => {
+import { makeSelectUsers } from '../../saga/user/selector';
+const AddPeoplePopup = ({ client, isOpen, userCall, users }) => {
     const { query } = client;
     const debouncedSave = useRef(
-        debounce(async value => {
-            const params = {
-                where: {
-                    username: {
-                        op: MONGO_OPS.LIKE,
-                        value: value,
+        debounce(value => {
+            if (value.length > 0) {
+                const params = {
+                    where: {
+                        username: {
+                            op: MONGO_OPS.LIKE,
+                            value: value,
+                        },
                     },
-                },
-            };
-            await userCall(query, params);
+                };
+                userCall(query, params);
+            }
         }),
         100,
     );
@@ -35,15 +39,27 @@ const AddPeoplePopup = ({ client, isOpen, userCall }) => {
                     </Box>
                     <Box align="center" justify="stretch" pad="small">
                         <TextInput
+                            spellCheck="false"
                             placeholder="Yian, @steve, name@example.com"
                             onChange={({ target: { value } }) => debouncedSave.current(value)}
                         />
-                        {/* <Box background="white" pad={{ top: 'xsmall', bottom: 'xsmall', left: 'small', right: 'small' }}>
-                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                            <Text margin={{ bottom: 'small' }}>Demo 1</Text>
-                        </Box> */}
+                        <Box background="white" pad={{ top: 'xsmall', bottom: 'xsmall', left: 'small', right: 'small' }}>
+                            {users &&
+                                users.map((item, index) => (
+                                    <Box
+                                        key={item._id}
+                                        direction="row-responsive"
+                                        align="center"
+                                        justify="stretch"
+                                        margin={{ bottom: index !== users.length ? 'small' : '' }}>
+                                        <Text margin={{ right: 'xsmall' }}>{item.username}</Text>
+                                        <Actions size="small" />
+                                        <Text margin={{ left: 'xsmall' }} weight="normal">
+                                            {item.email}
+                                        </Text>
+                                    </Box>
+                                ))}
+                        </Box>
                     </Box>
                     <Box width="small" margin="none" direction="row-responsive" pad={{ bottom: 'small' }}>
                         <Box pad={{ left: 'xsmall', right: 'xsmall' }}>
@@ -69,7 +85,9 @@ AddPeoplePopup.propTypes = {
     isOpen: PropTypes.bool,
 };
 
-const mapStateToProps = createStructuredSelector({});
+const mapStateToProps = createStructuredSelector({
+    users: makeSelectUsers(),
+});
 
 const mapDispatchToProps = dispatch => bindActionCreators({ userCall }, dispatch);
 

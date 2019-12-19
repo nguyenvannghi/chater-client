@@ -17,7 +17,6 @@ function* userSaga() {
     while (true) {
         const { query, params } = yield take(nameConst.USER_CALL);
         const loadDataWatcher = yield fork(takeLatest, userCallApi, query, params);
-        yield delay(400);
         const result = yield call(userCallApi, query, params);
         if (result && !result.data) {
             yield put(nameEvents.userCalFailed(result));
