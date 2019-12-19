@@ -1,12 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+
+// const emojiMap = {
+//     joy: '&#x1f602',
+//     shades: '&#x1f60e',
+//     happy: '&#x1f600',
+// };
+// const regExpression = /:([^:]*):/g;
+// const text = 'I was like :joy: and she was like :happy: and we ware like:shades::key::santa:';
+
+// const emojiIt = (re, text) => {
+//     let result;
+//     while ((result = re.exec(text))) {
+//         console.log(result[1]);
+//         text = text.replace(result[0], emojiMap[result[1]]);
+//     }
+//     return text;
+// };
+
+// $('#msg').html(emojiIt(regExpression, text));
+
 import React, { useCallback, useEffect, useState, useRef, memo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { Box, Text, Button, TextArea, Menu } from 'grommet';
-import { AddCircle, Camera, Apps, Attachment, Add } from 'grommet-icons';
+import { AddCircle, Camera, Apps, Add, Braille } from 'grommet-icons';
 import { useSubscription, useMutation } from '@apollo/react-hooks';
+import { Picker, emojiIndex } from 'emoji-mart';
 import { withApollo } from 'react-apollo';
 import * as lodash from 'lodash';
 import * as moment from 'moment';
@@ -17,12 +38,28 @@ import AddPeoplePopup from '../add-people';
 import { makeSelectRoom } from '../../saga/room/selector';
 import { makeSelectMessages, makeSelectLoadingMessages } from '../../saga/message/selector';
 import { messageCall } from '../../saga/message/action';
+import emojiImage from './64.png';
+
+const regExpression = /:([^:]*):/g;
+const denmo2 = 'I was like :apple: and she was like :christmas: and we ware like:apple::santa:';
+console.log(emojiIndex.search('apple').map(o => o.native));
+const EmojiParser = (re, text) => {
+    let result;
+    while ((result = re.exec(text))) {
+        console.log(result);
+        let emoji = emojiIndex.search(result[1]) && emojiIndex.search(result[1]).map(o => o.native);
+        text = text.replace(result[0], emoji && emoji[0]);
+    }
+    return text;
+};
 
 const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQueries, isLoading }) => {
     const { query } = client;
     const textInput = useRef();
     const messageListRef = useRef();
+    const [messageSend, setMessageSend] = useState(null);
     const [isOpenAddPeople, setOpenAddPeople] = useState(false);
+    const [openEmoji, setOpenEmoji] = useState(false);
     const [messages, setMessages] = useState();
     const [muationCreateMessage] = useMutation(CREATE_MESSAGE);
 
@@ -65,6 +102,14 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
         messageListRef.current.scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
     };
 
+    const addEmoji = useCallback(event => {
+        if (!event) return;
+        console.log(event);
+        let emoji = event.native;
+        setMessageSend(prevMessage => (prevMessage ? prevMessage + `::${emoji}::` : `::${emoji}::`));
+        setOpenEmoji(false);
+    }, []);
+
     const onSubmit = useCallback(() => {
         if (!roomSelected) {
             return;
@@ -76,7 +121,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
             room_id: {
                 _id: roomSelected._id,
             },
-            message_body: textInput.current.value,
+            message_body: messageSend,
             message_status: true,
             created_by: {
                 _id: currentUser._id,
@@ -118,7 +163,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                                 background={{ color: isMyMess ? 'brand' : 'dark-4', dark: true, opacity: 'medium' }}
                                 pad={{ left: 'medium', right: 'xsmall', top: 'xsmall', bottom: 'xsmall' }}
                                 round={{ corner: isMyMess ? 'right' : 'left' }}>
-                                <Text size="small">{item.message_body}</Text>
+                                <Text size="small" dangerouslySetInnerHTML={{ __html: item.message_body }}></Text>
                             </Box>
                             <Box align="center" justify="end" direction="row-responsive" alignSelf="stretch">
                                 <Text size="xsmall">{time}</Text>
@@ -228,6 +273,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                         }
                     }
                     direction="row-responsive"
+                    className="relative"
                     overflow="hidden">
                     <Box
                         align="stretch"
@@ -238,7 +284,9 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                         overflow="auto"
                         alignSelf="start"
                         wrap={true}
+                        className="absolute full-size overflow-auto"
                         ref={messageListRef}>
+                        <div dangerouslySetInnerHTML={{ __html: EmojiParser(regExpression, denmo2) }}></div>
                         {renderMessage()}
                     </Box>
                 </Box>
@@ -251,13 +299,34 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                         flex="grow"
                         alignSelf="stretch"
                         border={{ color: 'dark-2', side: 'left' }}>
-                        <TextArea plain={true} size="small" placeholder="Type a message..." ref={textInput} />
-                        <Button icon={<Attachment />} />
+                        <TextArea
+                            plain={true}
+                            size="small"
+                            placeholder="Type a message..."
+                            ref={textInput}
+                            onChange={() => setMessageSend(textInput.current.value)}
+                        />
+                        {/* <div contentEditable={true}>
+                            Looks good to me
+                            <span
+                                contentEditable={false}
+                                dangerouslySetInnerHTML={{
+                                    __html: emojiIt(regExpression, text),
+                                }}></span>
+                        </div> */}
+                        <Button icon={<Braille />} onClick={() => setOpenEmoji(true)} />
                         <Button icon={<Add />} onClick={onSubmit} />
                     </Box>
                 </Box>
             </Box>
             <AddPeoplePopup isOpen={isOpenAddPeople} />
+            {openEmoji && (
+                <Picker
+                    backgroundImageFn={() => emojiImage}
+                    style={{ position: 'absolute', bottom: '20px', right: '20px' }}
+                    onSelect={event => addEmoji(event)}
+                />
+            )}
         </>
     );
 };

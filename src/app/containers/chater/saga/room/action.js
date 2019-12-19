@@ -7,26 +7,41 @@ export const roomCall = (query, params) => ({
 });
 
 export const roomCallSuccess = data => ({
-    type: nameConst.ROOM_CALL_SUCCESS,
+    type: nameConst.ROOM_SUCCESS,
     query: data,
 });
 
 export const roomCalFailed = error => ({
-    type: nameConst.ROOM_CALL_FAILED,
+    type: nameConst.ROOM_FAILED,
     ...error,
 });
 
 export const roomCallSelected = data => ({
-    type: nameConst.ROOM_CALL_SELECTED,
+    type: nameConst.ROOM_SELECTED,
     room: data,
 });
 
 export const roomCallSelectedSuccess = data => ({
-    type: nameConst.ROOM_CALL_SELECTED_SUCCESS,
+    type: nameConst.ROOM_SELECTED_SUCCESS,
     room: data,
 });
 
 export const roomCallSelectedFailed = error => ({
-    type: nameConst.ROOM_CALL_SELECTED_FAILED,
+    type: nameConst.ROOM_SELECTED_FAILED,
+    ...error,
+});
+
+export const roomUpdate = data => ({
+    type: nameConst.ROOM_UPDATE_CALL,
+    mutation: data,
+});
+
+export const roomUpdatedSuccess = data => ({
+    type: nameConst.ROOM_UPDATED_SUCCESS,
+    query: data,
+});
+
+export const roomUpdatedFailed = error => ({
+    type: nameConst.ROOM_UPDATED_FAILED,
     ...error,
 });

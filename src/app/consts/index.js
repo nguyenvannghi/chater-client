@@ -2,6 +2,8 @@ export const APP_COMMON = 'APP_COMMON/';
 
 export const NSP_EMPLOYEE = 'NSP_EMPLOYEE/';
 
+export const CHATER_ROOM = 'CHATER_ROOM';
+
 export const MSG = {
     LOADING: 'Đang tải...',
     NODATA: 'Không có dữ liệu',

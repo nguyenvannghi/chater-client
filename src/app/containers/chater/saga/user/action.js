@@ -6,6 +6,10 @@ export const userCall = (query, params) => ({
     params: params,
 });
 
+export const userCallCancel = () => ({
+    type: nameConst.USER_CALL_CANCEL,
+});
+
 export const userCallSuccess = data => ({
     type: nameConst.USER_CALL_SUCCESS,
     query: data,

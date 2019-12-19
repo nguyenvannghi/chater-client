@@ -12,6 +12,7 @@ import Toast from './app/components/toast';
 import ConfirmPopup from './app/components/confirmPopup';
 
 import './styles/index.scss';
+import 'emoji-mart/css/emoji-mart.css';
 
 const theme = {
     global: {

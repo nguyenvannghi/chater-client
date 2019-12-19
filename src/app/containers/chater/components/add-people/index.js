@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withApollo } from 'react-apollo';
@@ -12,23 +12,30 @@ import { MONGO_OPS } from 'app/consts';
 import { userCall } from '../../saga/user/action';
 import { makeSelectUsers } from '../../saga/user/selector';
 const AddPeoplePopup = ({ client, isOpen, userCall, users }) => {
+    const [peoples, setPeoples] = useState(null);
     const { query } = client;
     const debouncedSave = useRef(
-        debounce(value => {
-            if (value.length > 0) {
-                const params = {
-                    where: {
-                        username: {
-                            op: MONGO_OPS.LIKE,
-                            value: value,
-                        },
+        debounce(async value => {
+            const params = {
+                where: {
+                    username: {
+                        op: MONGO_OPS.LIKE,
+                        value: value,
                     },
-                };
-                userCall(query, params);
-            }
+                },
+            };
+            await userCall(query, params);
         }),
-        100,
+        400,
     );
+
+    const selectPeople = useCallback(
+        item => {
+            setPeoples(prevMessage => (prevMessage ? [...prevMessage, item] : [item]));
+        },
+        [setPeoples],
+    );
+    console.log(peoples);
 
     return (
         isOpen && (
@@ -51,7 +58,8 @@ const AddPeoplePopup = ({ client, isOpen, userCall, users }) => {
                                         direction="row-responsive"
                                         align="center"
                                         justify="stretch"
-                                        margin={{ bottom: index !== users.length ? 'small' : '' }}>
+                                        margin={{ bottom: index !== users.length ? 'small' : '' }}
+                                        onClick={() => selectPeople(item)}>
                                         <Text margin={{ right: 'xsmall' }}>{item.username}</Text>
                                         <Actions size="small" />
                                         <Text margin={{ left: 'xsmall' }} weight="normal">

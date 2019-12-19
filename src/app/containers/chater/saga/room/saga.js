@@ -32,7 +32,7 @@ function* roomSaga() {
 
 function* roomSelectedSaga() {
     while (true) {
-        const { room } = yield take(nameConst.ROOM_CALL_SELECTED);
+        const { room } = yield take(nameConst.ROOM_SELECTED);
         if (room) {
             yield put(nameEvents.roomCallSelectedSuccess(room));
         } else {
