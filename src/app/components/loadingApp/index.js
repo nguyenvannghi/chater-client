@@ -17,8 +17,7 @@ const spinning = (
 );
 
 const LoadingApp = ({ isLoading }) => {
-    // return isLoading ? spinning : '';
-    return isLoading && <Layer>{spinning}</Layer>;
+    return isLoading && <Layer className="bg-transparent">{spinning}</Layer>;
 };
 
 LoadingApp.propTypes = {

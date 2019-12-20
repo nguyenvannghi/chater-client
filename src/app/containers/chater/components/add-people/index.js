@@ -11,7 +11,7 @@ import ToastLayer from 'app/components/toast-layer';
 import { MONGO_OPS } from 'app/consts';
 import { userCall } from '../../saga/user/action';
 import { makeSelectUsers } from '../../saga/user/selector';
-const AddPeoplePopup = ({ client, isOpen, userCall, users }) => {
+const AddPeoplePopup = ({ client, isOpen, onClose, userCall, users }) => {
     const [peoples, setPeoples] = useState(null);
     const { query } = client;
     const debouncedSave = useRef(
@@ -35,7 +35,6 @@ const AddPeoplePopup = ({ client, isOpen, userCall, users }) => {
         },
         [setPeoples],
     );
-    console.log(peoples);
 
     return (
         isOpen && (
@@ -74,7 +73,13 @@ const AddPeoplePopup = ({ client, isOpen, userCall, users }) => {
                             <Button color="brand" onClick={() => {}} primary label="Add" />
                         </Box>
                         <Box pad={{ left: 'xsmall', right: 'xsmall' }}>
-                            <Button color="dark-1" onClick={() => {}} label="Cancel" />
+                            <Button
+                                color="dark-1"
+                                onClick={() => {
+                                    onClose();
+                                }}
+                                label="Cancel"
+                            />
                         </Box>
                     </Box>
                 </Box>
@@ -89,6 +94,7 @@ AddPeoplePopup.defaultProps = {
 
 AddPeoplePopup.propTypes = {
     userCall: PropTypes.func,
+    onClose: PropTypes.func,
     onResetAction: PropTypes.func,
     isOpen: PropTypes.bool,
 };

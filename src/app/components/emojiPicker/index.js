@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import { Picker } from 'emoji-mart';
-import emojiImage from './64.png';
+import emojiImage from 'app/consts/64.png';
 
 const EmojiPicker = ({ isOpen, onSelect }) => {
     return (

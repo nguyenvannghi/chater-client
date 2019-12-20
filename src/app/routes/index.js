@@ -75,7 +75,6 @@ const Routers = ({ isLoginStatus, loginCallSuccess }) => {
                             <Route path="/home">
                                 <Home />
                             </Route>
-                            <Redirect to="/" />
                         </Switch>
                     </>
                 )}

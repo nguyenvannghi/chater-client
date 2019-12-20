@@ -5,19 +5,20 @@ import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { createStructuredSelector } from 'reselect';
 import { Box, Text, Button, Menu } from 'grommet';
-import { AddCircle, Camera, Apps } from 'grommet-icons';
+import { AddCircle, Camera, Apps, User } from 'grommet-icons';
 import { useSubscription } from '@apollo/react-hooks';
 import { withApollo } from 'react-apollo';
 import * as lodash from 'lodash';
 import * as moment from 'moment';
 import { MOMENT, MONGO_OPS } from 'app/consts';
-import { EmojiParser } from 'app/consts/helper';
+import { EmojiStringParser } from 'app/consts/helper';
 import { MESSAGE_ADD_SUB } from 'app/containers/chater/graphql';
 import AddPeoplePopup from '../add-people';
 import { makeSelectRoom } from '../../saga/room/selector';
 import { makeSelectMessages, makeSelectLoadingMessages } from '../../saga/message/selector';
 import { messageCall } from '../../saga/message/action';
 import MessageInput from '../message-input';
+import BgChat from 'app/assets/authentication-bg.jpg';
 
 const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQueries, isLoading }) => {
     const { query } = client;
@@ -31,7 +32,14 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                 const {
                     data: { messageAdded },
                 } = subscriptionData;
-                setMessages(prevMessage => (prevMessage ? [...prevMessage, messageAdded] : [messageAdded]));
+                if (!lodash.isEmpty(messageAdded)) {
+                    const {
+                        room: { _id },
+                    } = messageAdded;
+                    if (roomSelected._id === _id) {
+                        setMessages(prevMessage => (prevMessage ? [...prevMessage, messageAdded] : [messageAdded]));
+                    }
+                }
                 scrollToBottom();
             }
         },
@@ -91,7 +99,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                                 background={{ color: isMyMess ? 'brand' : 'dark-4', dark: true, opacity: 'medium' }}
                                 pad={{ left: 'medium', right: 'xsmall', top: 'xsmall', bottom: 'xsmall' }}
                                 round={{ corner: isMyMess ? 'right' : 'left' }}>
-                                <Text size="small" dangerouslySetInnerHTML={{ __html: EmojiParser(item.message_body) }}></Text>
+                                <Text size="small" dangerouslySetInnerHTML={{ __html: EmojiStringParser(item.message_body) }}></Text>
                             </Box>
                             <Box align="center" justify="end" direction="row-responsive" alignSelf="stretch">
                                 <Text size="xsmall">{time}</Text>
@@ -157,6 +165,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                                     </Text> */}
 
                                         <Menu
+                                            className="no-padding child-no-padding"
                                             open={false}
                                             items={[
                                                 {
@@ -167,11 +176,21 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                                                 },
                                                 { label: `Leave #${roomSelected.name}`, onClick: () => {} },
                                             ]}
-                                            label={roomSelected.name}
+                                            label={<Text>{roomSelected.name}</Text>}
                                         />
-                                        <Text size="xsmall" margin={{ left: 'small' }}>
-                                            {roomSelected.description}
-                                        </Text>
+                                        <Box align="center" justify="start" direction="row-responsive">
+                                            <Text size="small" weight="normal" truncate={true}>
+                                                <User size="small" />
+                                                {'  '}
+                                                {roomSelected.users && roomSelected.users.length}
+                                            </Text>
+                                            <Text size="xsmall" margin={{ left: 'small' }}>
+                                                |
+                                            </Text>
+                                            <Text size="xsmall" margin={{ left: 'small' }}>
+                                                {roomSelected.description}
+                                            </Text>
+                                        </Box>
                                     </Box>
                                 </>
                             )}
@@ -184,7 +203,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                             direction="row-responsive"
                             alignSelf="stretch"
                             pad={{ left: 'small', right: 'small', vertical: 'small', top: 'small' }}>
-                            <Button icon={<AddCircle />} />
+                            <Button icon={<AddCircle />} onClick={() => setOpenAddPeople(true)} />
                             <Button icon={<Camera />} />
                             <Button icon={<Apps />} />
                         </Box>
@@ -195,11 +214,10 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                     justify="start"
                     fill="vertical"
                     alignSelf="stretch"
-                    background={
-                        {
-                            // image: "url('http://xpanthersolutions.com/admin-templates/gappa/html/dark/assets/images/authentication-bg.jpg')",
-                        }
-                    }
+                    background={{
+                        image: `url('${BgChat}')`,
+                        repeat: 'repeat-x',
+                    }}
                     direction="row-responsive"
                     className="relative"
                     overflow="hidden">
@@ -219,7 +237,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                 </Box>
                 <MessageInput />
             </Box>
-            <AddPeoplePopup isOpen={isOpenAddPeople} />
+            <AddPeoplePopup isOpen={isOpenAddPeople} onClose={() => setOpenAddPeople(false)} />
         </>
     );
 };

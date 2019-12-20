@@ -162,13 +162,14 @@ const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected, onCallConfi
                         </Box>
                     </Box>
                 </Box>
-                <Box align="center" justify="center" border={{ color: 'dark-2', side: 'top' }}>
+                <Box align="center" justify="center" border={{ color: 'dark-2', side: 'top' }} className="min-height-auto">
                     <Box
                         align="center"
                         justify="between"
                         direction="row-responsive"
                         alignSelf="stretch"
-                        pad={{ left: 'small', right: 'small', vertical: 'small', top: 'small' }}>
+                        className="bottom-side min-height-auto"
+                        pad={{ left: 'small', right: 'small' }}>
                         <Button icon={<Chat />} />
                         <Button icon={<Archive />} />
                         <Button icon={<User />} />
