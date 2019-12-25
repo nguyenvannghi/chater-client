@@ -3,7 +3,7 @@ const UPDATE_ROOM = gql`
     mutation updateRoom(
         $id: String!
         $users: [UserInput]
-        $name: String!
+        $name: String
         $description: String
         $topic: String
         $image_url: String

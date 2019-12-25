@@ -31,9 +31,10 @@ export const roomCallSelectedFailed = error => ({
     ...error,
 });
 
-export const roomUpdate = data => ({
+export const roomUpdateCall = (mutate, params) => ({
     type: nameConst.ROOM_UPDATE_CALL,
-    mutation: data,
+    mutation: mutate,
+    params: params,
 });
 
 export const roomUpdatedSuccess = data => ({

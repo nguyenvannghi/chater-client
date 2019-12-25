@@ -15,15 +15,15 @@ const userCallApi = (query, params) => {
 function* userSaga() {
     while (true) {
         const { query, params } = yield take(nameConst.USER_CALL);
-        const loadDataWatcher = yield fork(takeLatest, nameConst.USER_CALL, query, params);
+        // const loadDataWatcher = yield fork(takeLatest, nameConst.USER_CALL, query, params);
         const result = yield call(userCallApi, query, params);
         if (result && !result.data) {
             yield put(nameEvents.userCalFailed(result));
         } else {
             yield put(nameEvents.userCallSuccess(result));
         }
-        yield put(nameEvents.userCallCancel());
-        yield cancel(loadDataWatcher);
+        // yield put(nameEvents.userCallCancel());
+        // yield cancel(loadDataWatcher);
     }
 }
 

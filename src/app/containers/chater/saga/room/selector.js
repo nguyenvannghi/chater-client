@@ -9,8 +9,10 @@ const makeSelectRooms = () => createSelector(selectRoomState, selectRoomState =>
 
 const makeSelectRoom = () => createSelector(selectRoomState, selectRoomState => selectRoomState.roomSelected);
 
+const makeSelectRoomUpdated = () => createSelector(selectRoomState, selectRoomState => selectRoomState.roomUpdated);
+
 const makeSelectLoadingRooms = () => createSelector(selectRoomState, selectRoomState => selectRoomState.isLoading);
 
 const makeSelectError = () => createSelector(selectRoomState, selectRoomState => selectRoomState.error);
 
-export { makeSelectRooms, makeSelectRoom, makeSelectLoadingRooms, makeSelectError };
+export { makeSelectRooms, makeSelectRoom, makeSelectRoomUpdated, makeSelectLoadingRooms, makeSelectError };

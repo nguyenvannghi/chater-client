@@ -3,6 +3,8 @@ export const APP_COMMON = 'APP_COMMON/';
 export const NSP_EMPLOYEE = 'NSP_EMPLOYEE/';
 
 export const CHATER_ROOM = 'CHATER_ROOM';
+export const CHATER_USER = 'CHATER_USER';
+export const CHATER_MESSAGE = 'CHATER_MESSAGE';
 
 export const MSG = {
     LOADING: 'Đang tải...',

@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withApollo } from 'react-apollo';
 import { compose, bindActionCreators } from 'redux';
-import { Box, Button } from 'grommet';
+import { Box, Button, TextArea } from 'grommet';
 import { Add, Braille } from 'grommet-icons';
 import { useMutation } from '@apollo/react-hooks';
 import { createStructuredSelector } from 'reselect';
-import ContentEditable from 'react-contenteditable';
 import { CREATE_MESSAGE } from 'app/containers/chater/graphql';
-import { getCurrentUser, EmojiParser } from 'app/consts/helper';
+import { getCurrentUser, EmojiNativeToIDParser } from 'app/consts/helper';
 import EmojiPicker from 'app/components/emojiPicker';
 
 import { createMessageAction } from '../../service';
@@ -17,7 +16,6 @@ import { makeSelectRoom } from '../../saga/room/selector';
 
 const MessageInput = ({ client, roomSelected }) => {
     const textInput = useRef();
-    const [messageSendServer, setMessageSendServer] = useState('');
     const [messageSendHtml, setMessageSendHtml] = useState('');
     const [openEmoji, setOpenEmoji] = useState(false);
     const [muationCreateMessage] = useMutation(CREATE_MESSAGE);
@@ -25,19 +23,18 @@ const MessageInput = ({ client, roomSelected }) => {
     const addEmoji = useCallback(
         event => {
             if (!event) return;
-            let emoji = event.id;
-            setMessageSendServer(prevMsr => (prevMsr ? prevMsr + `:__${emoji}__:` : `:__${emoji}__:`));
+            let emoji = event.native;
 
-            setMessageSendHtml(prevMht => (prevMht ? prevMht + EmojiParser(emoji) : EmojiParser(emoji)));
+            setMessageSendHtml(prevMht => (prevMht ? prevMht + `${emoji}` : `${emoji}`));
 
             setOpenEmoji(false);
         },
-        [setMessageSendServer, setMessageSendHtml],
+        [setMessageSendHtml],
     );
 
     const onSubmit = useCallback(() => {
         const currentUser = getCurrentUser();
-        if (!roomSelected || !messageSendServer) {
+        if (!roomSelected || !messageSendHtml) {
             return;
         }
         const data = {
@@ -47,7 +44,7 @@ const MessageInput = ({ client, roomSelected }) => {
             room_id: {
                 _id: roomSelected._id,
             },
-            message_body: messageSendServer,
+            message_body: EmojiNativeToIDParser(messageSendHtml),
             message_status: true,
             created_by: {
                 _id: currentUser._id,
@@ -55,41 +52,37 @@ const MessageInput = ({ client, roomSelected }) => {
         };
         return createMessageAction(data, muationCreateMessage).then(res => {
             textInput.current.value = '';
-            setMessageSendServer('');
             setMessageSendHtml('');
         });
-    }, [roomSelected, messageSendServer, muationCreateMessage]);
+    }, [roomSelected, muationCreateMessage, setMessageSendHtml, messageSendHtml]);
 
     const handleChange = evt => {
-        setMessageSendServer(evt.target.value);
         setMessageSendHtml(evt.target.value);
     };
 
     return (
         <>
-            <Box align="center" justify="start" alignSelf="stretch" border={{ color: 'dark-2', side: 'top' }}>
+            <Box
+                align="center"
+                justify="start"
+                className="bottom-side min-height-auto"
+                alignSelf="stretch"
+                border={{ color: 'dark-2', side: 'top' }}>
                 <Box
                     align="center"
                     justify="center"
                     direction="row-responsive"
                     fill="horizontal"
+                    className="min-height-auto"
                     flex="grow"
                     alignSelf="stretch"
                     border={{ color: 'dark-2', side: 'left' }}>
-                    {/* <TextArea
+                    <TextArea
                         plain={true}
                         size="small"
-                        value={EmojiStringParser(messageSendServer)}
+                        value={messageSendHtml}
                         placeholder="Type a message..."
                         ref={textInput}
-                        onChange={handleChange}
-                        dangerouslySetInnerHTML
-                    /> */}
-                    <ContentEditable
-                        className="content-editable"
-                        ref={textInput}
-                        tagName="pre"
-                        html={messageSendServer}
                         onChange={handleChange}
                     />
                     <Button icon={<Braille />} onClick={() => setOpenEmoji(true)} />

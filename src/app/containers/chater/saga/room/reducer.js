@@ -6,6 +6,7 @@ export const initialState = {
     error: null,
     rooms: null,
     roomSelected: null,
+    roomUpdated: null,
     isLoading: true,
 };
 
@@ -29,6 +30,15 @@ const roomReducer = (state = initialState, action) =>
                 draft.rooms = initialState.rooms;
                 draft.isLoading = initialState.isLoading;
                 draft.error = action.error;
+                return draft;
+            case nameConst.ROOM_UPDATED_SUCCESS:
+                const { updateRoom } = action.query.data;
+                draft.error = initialState.error;
+                draft.roomUpdated = updateRoom;
+                return draft;
+            case nameConst.ROOM_UPDATED_FAILED:
+                draft.error = action.error;
+                draft.roomUpdated = initialState.roomUpdated;
                 return draft;
             default:
                 return draft;

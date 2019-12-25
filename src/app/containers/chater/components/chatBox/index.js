@@ -11,7 +11,7 @@ import { withApollo } from 'react-apollo';
 import * as lodash from 'lodash';
 import * as moment from 'moment';
 import { MOMENT, MONGO_OPS } from 'app/consts';
-import { EmojiStringParser } from 'app/consts/helper';
+import { EmojiServerToClientParser } from 'app/consts/helper';
 import { MESSAGE_ADD_SUB } from 'app/containers/chater/graphql';
 import AddPeoplePopup from '../add-people';
 import { makeSelectRoom } from '../../saga/room/selector';
@@ -47,19 +47,19 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
     useEffect(() => {
         if (roomSelected) {
             setMessages(null);
-            async function fetchMessage() {
-                const params = {
-                    room: {
-                        op: MONGO_OPS.EQUA,
-                        value: roomSelected._id,
-                    },
-                };
-                await messageCall(query, params);
-                setMessages(messageQueries);
-            }
-            fetchMessage();
+            const params = {
+                room: {
+                    op: MONGO_OPS.EQUA,
+                    value: roomSelected._id,
+                },
+            };
+            messageCall(query, params);
         }
-    }, [roomSelected, messageCall, messageQueries]);
+    }, [roomSelected, messageCall]);
+
+    useEffect(() => {
+        setMessages(messageQueries);
+    }, [messageQueries]);
 
     const scrollToBottom = () => {
         const scrollHeight = messageListRef.current.scrollHeight;
@@ -86,20 +86,47 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                     <Box
                         key={item._id}
                         align="center"
-                        justify={isMyMess ? 'end' : 'start'}
+                        justify={!isMyMess ? 'end' : 'start'}
                         margin={{ bottom: 'large' }}
                         fill="horizontal"
                         flex="shrink"
                         direction="row-responsive"
-                        pad={{ [isMyMess ? 'right' : 'left']: 'medium' }}>
-                        <Box align="center" justify="center">
+                        pad={{ [!isMyMess ? 'right' : 'left']: 'medium' }}>
+                        {/* <Box align="center" justify="center" margin={{ right: 'small' }}>
+                            <Box
+                                align="center"
+                                justify="center"
+                                height="xxsmall"
+                                width="xxsmall"
+                                overflow="hidden"
+                                flex="grow"
+                                round="full"
+                                background={{
+                                    image: `url('${item.image_url}')`,
+                                    color: 'white',
+                                    position: 'center',
+                                    size: 'contain',
+                                }}></Box>
+                            <Text size="small" weight="normal" truncate={true}>
+                                {item.sender && item.sender.username}
+                            </Text>
+                        </Box> */}
+                        <Box align="center">
+                            <Box alignSelf="stretch" align={!isMyMess ? 'end' : 'start'}>
+                                <Text size="small" weight="normal" truncate={true}>
+                                    {item.sender && item.sender.username}
+                                </Text>
+                            </Box>
                             <Box
                                 align="center"
                                 justify="center"
                                 background={{ color: isMyMess ? 'brand' : 'dark-4', dark: true, opacity: 'medium' }}
                                 pad={{ left: 'medium', right: 'xsmall', top: 'xsmall', bottom: 'xsmall' }}
-                                round={{ corner: isMyMess ? 'right' : 'left' }}>
-                                <Text size="small" dangerouslySetInnerHTML={{ __html: EmojiStringParser(item.message_body) }}></Text>
+                                round="small">
+                                {/* round={{ corner: isMyMess ? 'right' : 'left' }}> */}
+                                <Text
+                                    size="small"
+                                    dangerouslySetInnerHTML={{ __html: EmojiServerToClientParser(item.message_body) }}></Text>
                             </Box>
                             <Box align="center" justify="end" direction="row-responsive" alignSelf="stretch">
                                 <Text size="xsmall">{time}</Text>
@@ -175,6 +202,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                                                     },
                                                 },
                                                 { label: `Leave #${roomSelected.name}`, onClick: () => {} },
+                                                { label: `Drop #${roomSelected.name}`, onClick: () => {} },
                                             ]}
                                             label={<Text>{roomSelected.name}</Text>}
                                         />

@@ -44,3 +44,25 @@
 .bg-transparent {
     background: transparent;
 }
+
+.suggesstion {
+    .suggest-selected {
+        list-style: none;
+        text-align: left;
+        padding: 0;
+        li {
+            display: inline;
+            background: #7d4cdb;
+            color: #fff;
+            margin: 0 5px;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            .remove {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+}

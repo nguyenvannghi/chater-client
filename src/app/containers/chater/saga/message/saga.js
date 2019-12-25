@@ -24,7 +24,6 @@ function* messageSaga() {
         } else {
             yield put(nameEvents.messageCallSuccess(result));
         }
-
         yield put(loadingClose());
     }
 }

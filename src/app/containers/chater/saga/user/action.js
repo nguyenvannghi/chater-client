@@ -19,3 +19,18 @@ export const userCalFailed = error => ({
     type: nameConst.USER_CALL_FAILED,
     ...error,
 });
+
+export const userUpdate = data => ({
+    type: nameConst.USER_CALL_UPDATE,
+    mutation: data,
+});
+
+export const userUpdatedSuccess = data => ({
+    type: nameConst.USER_UPDATED_SUCCESS,
+    query: data,
+});
+
+export const userUpdatedFailed = error => ({
+    type: nameConst.USER_UPDATED_FAILED,
+    ...error,
+});
