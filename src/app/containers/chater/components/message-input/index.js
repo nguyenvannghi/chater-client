@@ -7,7 +7,7 @@ import { Box, Button, TextArea } from 'grommet';
 import { Add, Braille } from 'grommet-icons';
 import { useMutation } from '@apollo/react-hooks';
 import { createStructuredSelector } from 'reselect';
-import { CREATE_MESSAGE } from 'app/containers/chater/graphql';
+import { CREATE_MESSAGE } from 'app/containers/chater/graphql/message/mutation';
 import { getCurrentUser, EmojiNativeToIDParser } from 'app/consts/helper';
 import EmojiPicker from 'app/components/emojiPicker';
 

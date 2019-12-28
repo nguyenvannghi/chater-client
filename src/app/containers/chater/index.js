@@ -7,14 +7,17 @@ import { Box, Grid } from 'grommet';
 import { withApollo } from 'react-apollo';
 import { getCurrentUser } from 'app/consts/helper';
 import { MONGO_OPS } from 'app/consts';
-import { injectRoomSaga, injectMessageSaga, injectUserSaga } from './injectReducerSaga';
+import { injectRoomSaga, injectMessageSaga, injectUserSaga, injectUserRoomSaga } from './injectReducerSaga';
 import { roomCall } from './saga/room/action';
+import { makeSelectRoom } from './saga/room/selector';
+import { userRoomsCall } from './saga/user-room/action';
 import { ChatBox, Sidebar } from './components';
 
-const Chater = ({ client, roomCall }) => {
+const Chater = ({ client, roomSelected, roomCall, userRoomsCall }) => {
     injectRoomSaga();
     injectMessageSaga();
     injectUserSaga();
+    injectUserRoomSaga();
 
     const { query } = client;
     const currentUser = getCurrentUser();
@@ -28,6 +31,18 @@ const Chater = ({ client, roomCall }) => {
     useEffect(() => {
         roomCall(query, params);
     }, [roomCall, query, params]);
+
+    useEffect(() => {
+        if (roomSelected) {
+            const params = {
+                room: {
+                    value: roomSelected._id,
+                    op: MONGO_OPS.EQUA,
+                },
+            };
+            userRoomsCall(query, params);
+        }
+    }, [userRoomsCall, query, roomSelected]);
 
     return (
         <Grid
@@ -51,11 +66,14 @@ const Chater = ({ client, roomCall }) => {
 Chater.propTypes = {
     roomCall: PropTypes.func,
     client: PropTypes.any,
+    roomSelected: PropTypes.object,
 };
 
-const mapStateToProps = createStructuredSelector({});
+const mapStateToProps = createStructuredSelector({
+    roomSelected: makeSelectRoom(),
+});
 
-const mapDispatchToProps = dispatch => bindActionCreators({ roomCall }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ roomCall, userRoomsCall }, dispatch);
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

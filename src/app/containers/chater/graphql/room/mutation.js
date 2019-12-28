@@ -2,12 +2,12 @@ import gql from 'graphql-tag';
 const UPDATE_ROOM = gql`
     mutation updateRoom(
         $id: String!
-        $users: [UserInput]
+        $users: [IdInput]
         $name: String
         $description: String
         $topic: String
         $image_url: String
-        $updated_by: UserInput
+        $updated_by: IdInput
         $is_private: Boolean
     ) {
         updateRoom(

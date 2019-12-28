@@ -5,6 +5,7 @@ export const NSP_EMPLOYEE = 'NSP_EMPLOYEE/';
 export const CHATER_ROOM = 'CHATER_ROOM';
 export const CHATER_USER = 'CHATER_USER';
 export const CHATER_MESSAGE = 'CHATER_MESSAGE';
+export const CHATER_USER_ROOM = 'CHATER_USER_ROOM';
 
 export const MSG = {
     LOADING: 'Đang tải...',

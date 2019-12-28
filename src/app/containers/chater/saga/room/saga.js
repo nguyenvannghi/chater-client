@@ -1,6 +1,6 @@
 import { put, take, call, fork } from 'redux-saga/effects';
 import { loadingOpen, loadingClose } from 'app/components/loadingApp/action';
-import { GET_ROOMS } from 'app/containers/chater/graphql';
+import { GET_ROOMS } from 'app/containers/chater/graphql/room/queries';
 import { UPDATE_ROOM } from 'app/containers/chater/graphql/room/mutation';
 
 import * as nameEvents from './action';

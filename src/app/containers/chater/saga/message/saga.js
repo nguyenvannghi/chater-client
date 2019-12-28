@@ -1,6 +1,6 @@
 import { put, take, call, fork } from 'redux-saga/effects';
 import { loadingOpen, loadingClose } from 'app/components/loadingApp/action';
-import { GET_MESSAGES } from 'app/containers/chater/graphql';
+import { GET_MESSAGES } from 'app/containers/chater/graphql/message/queries';
 import { FETCH_POLICY } from 'app/consts';
 
 import * as nameEvents from './action';
