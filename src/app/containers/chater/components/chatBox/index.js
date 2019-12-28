@@ -15,12 +15,13 @@ import { EmojiServerToClientParser } from 'app/consts/helper';
 import { MESSAGE_ADD_SUB } from 'app/containers/chater/graphql';
 import AddPeoplePopup from '../add-people';
 import { makeSelectRoom } from '../../saga/room/selector';
+import { makeSelectRooms } from '../../saga/user-room/selector';
 import { makeSelectMessages, makeSelectLoadingMessages } from '../../saga/message/selector';
 import { messageCall } from '../../saga/message/action';
 import MessageInput from '../message-input';
 import BgChat from 'app/assets/authentication-bg.jpg';
 
-const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQueries, isLoading }) => {
+const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQueries, userRooms, isLoading }) => {
     const { query } = client;
     const messageListRef = useRef();
     const [isOpenAddPeople, setOpenAddPeople] = useState(false);
@@ -209,8 +210,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                                         <Box align="center" justify="start" direction="row-responsive">
                                             <Text size="small" weight="normal" truncate={true}>
                                                 <User size="small" />
-                                                {'  '}
-                                                {roomSelected.users && roomSelected.users.length}
+                                                {userRooms && userRooms.length}
                                             </Text>
                                             <Text size="xsmall" margin={{ left: 'small' }}>
                                                 |
@@ -270,15 +270,21 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
     );
 };
 
+ChatBox.defaultProps = {
+    userRooms: [],
+};
+
 ChatBox.propTypes = {
     messageCall: PropTypes.func,
     client: PropTypes.any,
     data: PropTypes.array,
     messageQueries: PropTypes.array,
+    userRooms: PropTypes.array,
 };
 
 const mapStateToProps = createStructuredSelector({
     roomSelected: makeSelectRoom(),
+    userRooms: makeSelectRooms(),
     messageQueries: makeSelectMessages(),
     isLoading: makeSelectLoadingMessages(),
 });

@@ -1,12 +1,29 @@
 import { put, take, call, fork } from 'redux-saga/effects';
+import { loadingOpen, loadingClose } from 'app/components/loadingApp/action';
 import { GET_USER_ROOMS } from 'app/containers/chater/graphql/user-room/queries';
-// import { CREATE_USER_ROOM } from 'app/containers/chater/graphql/user-room/mutation';
+import { CREATE_USER_ROOM, UPDATE_USER_ROOM } from 'app/containers/chater/graphql/user-room/mutation';
 
 import * as nameEvents from './action';
 import * as nameConst from './const';
 
 const userRoomsCallApi = (query, params) => {
     return query({ query: GET_USER_ROOMS, variables: params })
+        .then(res => {
+            return res;
+        })
+        .catch(err => err);
+};
+
+const userRoomAddApi = (mutation, params) => {
+    return mutation({ mutation: CREATE_USER_ROOM, variables: params })
+        .then(res => {
+            return res;
+        })
+        .catch(err => err);
+};
+
+const userRoomUpdateApi = (mutation, params) => {
+    return mutation({ mutation: UPDATE_USER_ROOM, variables: params })
         .then(res => {
             return res;
         })
@@ -25,6 +42,36 @@ function* userRoomsSaga() {
     }
 }
 
+function* userRoomAddSaga() {
+    while (true) {
+        const { mutation, params } = yield take(nameConst.USER_ROOM_ADD_CALL);
+        yield put(loadingOpen());
+        const result = yield call(userRoomAddApi, mutation, params);
+        if (result && !result.data) {
+            yield put(nameEvents.userRoomAddedFailed(result));
+        } else {
+            yield put(nameEvents.userRoomAddedSuccess(result));
+        }
+        yield put(loadingClose());
+    }
+}
+
+function* userRoomUpdateSaga() {
+    while (true) {
+        const { mutation, params } = yield take(nameConst.USER_ROOM_UPDATE_CALL);
+        yield put(loadingOpen());
+        const result = yield call(userRoomUpdateApi, mutation, params);
+        if (result && !result.data) {
+            yield put(nameEvents.userRoomUpdatedFailed(result));
+        } else {
+            yield put(nameEvents.userRoomUpdatedSuccess(result));
+        }
+        yield put(loadingClose());
+    }
+}
+
 export default function* root() {
     yield fork(userRoomsSaga);
+    yield fork(userRoomAddSaga);
+    yield fork(userRoomUpdateSaga);
 }

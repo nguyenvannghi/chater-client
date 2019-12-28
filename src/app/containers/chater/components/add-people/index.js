@@ -10,11 +10,12 @@ import { createStructuredSelector } from 'reselect';
 import ToastLayer from 'app/components/toast-layer';
 import { MONGO_OPS, MONGO_LOGIS } from 'app/consts';
 import { userCall } from '../../saga/user/action';
-import { roomUpdateCall } from '../../saga/room/action';
+import { userRoomAddCall } from '../../saga/user-room/action';
 import { makeSelectUsers } from '../../saga/user/selector';
 import { makeSelectRoom } from '../../saga/room/selector';
+import { makeSelectRooms } from '../../saga/user-room/selector';
 
-const AddPeoplePopup = ({ client, isOpen, onClose, userCall, roomUpdateCall, users, roomSelected }) => {
+const AddPeoplePopup = ({ client, isOpen, onClose, userCall, userRoomAddCall, users, roomSelected, userRooms }) => {
     const { query, mutate } = client;
     const textInput = useRef();
     const [peoples, setPeoples] = useState(null);
@@ -45,8 +46,8 @@ const AddPeoplePopup = ({ client, isOpen, onClose, userCall, roomUpdateCall, use
                     },
                 };
                 let users = [];
-                if (roomSelected) {
-                    users = roomSelected.users;
+                if (userRooms && userRooms.length > 0) {
+                    users = userRooms.map(item => item._id);
                 }
                 if (peoples && peoples.length > 0) {
                     users.concat(peoples);
@@ -61,7 +62,7 @@ const AddPeoplePopup = ({ client, isOpen, onClose, userCall, roomUpdateCall, use
                 }
                 userCall(query, params);
             },
-            [userCall, query, peoples, roomSelected],
+            [userCall, query, peoples, userRooms],
         ),
         400,
     );
@@ -84,16 +85,24 @@ const AddPeoplePopup = ({ client, isOpen, onClose, userCall, roomUpdateCall, use
 
     const onAddPeopleInRoom = useCallback(async () => {
         if (roomSelected && !isEmpty(peoples)) {
-            const allPeoples = peoples.concat(roomSelected.users);
-            const params = {
-                id: roomSelected._id,
-                users: allPeoples.map(item => ({ _id: item._id })),
-            };
-            await roomUpdateCall(mutate, params);
+            peoples.forEach(item => {
+                const params = {
+                    user: {
+                        _id: item._id,
+                    },
+                    room: {
+                        _id: roomSelected._id,
+                    },
+                    type: 'MEMBER',
+                    status: true,
+                };
+                userRoomAddCall(mutate, params);
+            });
+
             setPeoples(null);
             onClose();
         }
-    }, [peoples, mutate, roomUpdateCall, roomSelected, onClose]);
+    }, [peoples, mutate, userRoomAddCall, roomSelected, onClose]);
 
     return (
         isOpen && (
@@ -169,20 +178,22 @@ AddPeoplePopup.defaultProps = {
 };
 
 AddPeoplePopup.propTypes = {
+    userRooms: PropTypes.array,
+    userRoomAddCall: PropTypes.func,
     userCall: PropTypes.func,
     onClose: PropTypes.func,
     onResetAction: PropTypes.func,
-    roomUpdateCall: PropTypes.func,
     isOpen: PropTypes.bool,
     roomSelected: PropTypes.object,
 };
 
 const mapStateToProps = createStructuredSelector({
     users: makeSelectUsers(),
+    userRooms: makeSelectRooms(),
     roomSelected: makeSelectRoom(),
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ userCall, roomUpdateCall }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ userCall, userRoomAddCall }, dispatch);
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

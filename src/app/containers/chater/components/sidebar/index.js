@@ -72,7 +72,7 @@ const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected, onCallConfi
                         </Box>
                         <Box align="center" justify="center">
                             <Text size="xsmall" truncate={true}>
-                                {item.users && item.users.length} members
+                                {/* {item.users && item.users.length} members */}
                             </Text>
                         </Box>
                     </Box>

@@ -49,7 +49,7 @@ function* roomSelectedSaga() {
     }
 }
 
-function* userUpdateSaga() {
+function* roomUpdateSaga() {
     while (true) {
         const { mutation, params } = yield take(nameConst.ROOM_UPDATE_CALL);
         yield put(loadingOpen());
@@ -66,5 +66,5 @@ function* userUpdateSaga() {
 export default function* root() {
     yield fork(roomSaga);
     yield fork(roomSelectedSaga);
-    yield fork(userUpdateSaga);
+    yield fork(roomUpdateSaga);
 }
