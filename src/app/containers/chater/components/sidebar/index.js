@@ -24,7 +24,7 @@ const Sidebar = ({ client }) => {
                 },
             };
             dispatch(roomCallSelected(item, query));
-            // dispatch(userRoomsCall(query, params));
+            dispatch(userRoomsCall(query, params));
         },
         [dispatch, query],
     );
