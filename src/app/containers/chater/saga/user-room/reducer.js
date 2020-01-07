@@ -1,50 +1,60 @@
 /* eslint-disable no-param-reassign */
+import { createReducer } from '@reduxjs/toolkit';
 import produce from 'immer';
-import * as nameConst from './const';
+import * as nameAction from './action';
 
 export const initialState = {
     error: null,
     userRooms: null,
-    isLoading: true,
+    isLoading: false,
     userRoomUpdated: null,
     userRoomAdded: null,
 };
 
-const userRoomReducer = (state = initialState, action) =>
-    produce(state, draft => {
-        switch (action.type) {
-            case nameConst.USER_ROOM_SUCCESS:
-                const { userRooms } = action.query.data;
-                draft.userRooms = userRooms;
-                draft.isLoading = action.query.loading;
-                draft.error = initialState.error;
-                return draft;
-            case nameConst.USER_ROOM_FAILED:
-                draft.userRooms = initialState.userRooms;
-                draft.isLoading = initialState.isLoading;
-                draft.error = action.error;
-                return draft;
-            case nameConst.USER_ROOM_UPDATED_SUCCESS:
-                const { updateUserRoom } = action.query.data;
-                draft.error = initialState.error;
-                draft.userRoomUpdated = updateUserRoom;
-                return draft;
-            case nameConst.USER_ROOM_UPDATED_FAILED:
-                draft.error = action.error;
-                draft.userRoomUpdated = initialState.userRoomUpdated;
-                return draft;
-            case nameConst.USER_ROOM_ADDED_SUCCESS:
-                const { addUserRoom } = action.query.data;
-                draft.error = initialState.error;
-                draft.userRoomAdded = addUserRoom;
-                return draft;
-            case nameConst.USER_ROOM_ADDED_FAILED:
-                draft.error = action.error;
-                draft.userRoomAdded = initialState.userRoomAdded;
-                return draft;
-            default:
-                return draft;
-        }
-    });
+const userRoomReducer = createReducer(initialState, {
+    [nameAction.userRoomAddCall]: produce(draft => {
+        draft.isLoading = true;
+        return draft;
+    }),
+    [nameAction.userRoomsSuccess]: produce((draft, action) => {
+        const { payload } = action;
+        const { userRooms } = action.payload.data;
+        draft.userRooms = userRooms;
+        draft.isLoading = payload.loading;
+        draft.error = initialState.error;
+        return draft;
+    }),
+    [nameAction.userRoomsFailed]: produce((draft, action) => {
+        const { payload } = action;
+        draft.userRooms = initialState.userRooms;
+        draft.isLoading = initialState.isLoading;
+        draft.error = payload;
+        return draft;
+    }),
+    [nameAction.userRoomUpdatedSuccess]: produce((draft, action) => {
+        const { updateUserRoom } = action.payload.data;
+        draft.error = initialState.error;
+        draft.userRoomUpdated = updateUserRoom;
+        return draft;
+    }),
+    [nameAction.userRoomUpdatedFailed]: produce((draft, action) => {
+        const { payload } = action;
+        draft.error = payload.error;
+        draft.userRoomUpdated = initialState.userRoomUpdated;
+        return draft;
+    }),
+    [nameAction.userRoomAddedSuccess]: produce((draft, action) => {
+        const { addUserRoom } = action.payload.data;
+        draft.error = initialState.error;
+        draft.userRoomAdded = addUserRoom;
+        return draft;
+    }),
+    [nameAction.userRoomAddedFailed]: produce((draft, action) => {
+        const { payload } = action;
+        draft.error = payload.error;
+        draft.userRoomAdded = initialState.userRoomAdded;
+        return draft;
+    }),
+});
 
 export default userRoomReducer;

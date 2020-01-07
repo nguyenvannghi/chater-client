@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { injectReducerSaga } from 'app/components/reducerSagaImport';
+import injectReducerSaga from 'app/components/reducerSagaImport';
 
 import { ROOM_KEY_REDUCER_SAGA } from './saga/room/const';
 import { MESSAGE_KEY_REDUCER_SAGA } from './saga/message/const';

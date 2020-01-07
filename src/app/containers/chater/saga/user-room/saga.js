@@ -33,9 +33,10 @@ const userRoomUpdateApi = (mutation, params) => {
 
 function* userRoomsSaga() {
     while (true) {
-        const { query, params } = yield take(nameConst.USER_ROOM_CALL);
+        const {
+            payload: { query, params },
+        } = yield take(nameConst.USER_ROOM_CALL);
         const result = yield call(userRoomsCallApi, query, params);
-        console.log(result);
         if (result && !result.data) {
             yield put(nameEvents.userRoomsFailed(result));
         } else {

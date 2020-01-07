@@ -23,9 +23,8 @@ const Sidebar = ({ client }) => {
                     op: MONGO_OPS.EQUA,
                 },
             };
-            console.log(params);
             dispatch(roomCallSelected(item, query));
-            dispatch(userRoomsCall(query, params));
+            // dispatch(userRoomsCall(query, params));
         },
         [dispatch, query],
     );

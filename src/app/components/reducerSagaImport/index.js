@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import useInjectReducer from 'app/reducers/injectReducer';
-import useInjectSaga from 'app/saga/injectSaga';
+import { useInjectReducer, useInjectSaga } from 'redux-injectors';
 
 const injectReducerSaga = (KEY_REDUCER_SAGA, reducer, saga) => {
-    useInjectReducer(KEY_REDUCER_SAGA, reducer);
-    useInjectSaga(KEY_REDUCER_SAGA, saga);
+    useInjectReducer({ key: KEY_REDUCER_SAGA, reducer });
+    useInjectSaga({ key: KEY_REDUCER_SAGA, saga });
 };
 
-export { useInjectReducer, useInjectSaga, injectReducerSaga };
+export default injectReducerSaga;

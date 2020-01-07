@@ -1,49 +1,22 @@
+import { createAction } from '@reduxjs/toolkit';
 import * as nameConst from './const';
 
-export const userRoomsCall = (query, params) => ({
-    type: nameConst.USER_ROOM_CALL,
-    query: query,
-    params: params,
-});
+const userRoomsCall = createAction(nameConst.USER_ROOM_CALL, (query, params) => ({ payload: { query: query, params: params } }));
+const userRoomsSuccess = createAction(nameConst.USER_ROOM_SUCCESS, data => ({ payload: data }));
+const userRoomsFailed = createAction(nameConst.USER_ROOM_FAILED, error => ({ payload: error }));
+const userRoomAddCall = createAction(nameConst.USER_ROOM_ADD_CALL, (mutate, params) => ({ mutation: mutate, params: params }));
+const userRoomUpdatedSuccess = createAction(nameConst.USER_ROOM_UPDATED_SUCCESS, data => ({ query: data }));
+const userRoomUpdatedFailed = createAction(nameConst.USER_ROOM_UPDATED_FAILED, error => ({ payload: error }));
+const userRoomAddedSuccess = createAction(nameConst.USER_ROOM_ADDED_SUCCESS, data => ({ query: data }));
+const userRoomAddedFailed = createAction(nameConst.USER_ROOM_ADDED_FAILED, error => ({ payload: error }));
 
-export const userRoomsSuccess = data => ({
-    type: nameConst.USER_ROOM_SUCCESS,
-    query: data,
-});
-
-export const userRoomsFailed = error => ({
-    type: nameConst.USER_ROOM_FAILED,
-    ...error,
-});
-
-export const userRoomAddCall = (mutate, params) => ({
-    type: nameConst.USER_ROOM_ADD_CALL,
-    mutation: mutate,
-    params: params,
-});
-
-export const userRoomAddedSuccess = data => ({
-    type: nameConst.USER_ROOM_ADDED_SUCCESS,
-    query: data,
-});
-
-export const userRoomAddedFailed = error => ({
-    type: nameConst.USER_ROOM_ADDED_FAILED,
-    ...error,
-});
-
-export const userRoomUpdateCall = (mutate, params) => ({
-    type: nameConst.USER_ROOM_UPDATE_CALL,
-    mutation: mutate,
-    params: params,
-});
-
-export const userRoomUpdatedSuccess = data => ({
-    type: nameConst.USER_ROOM_UPDATED_SUCCESS,
-    query: data,
-});
-
-export const userRoomUpdatedFailed = error => ({
-    type: nameConst.USER_ROOM_UPDATED_FAILED,
-    ...error,
-});
+export {
+    userRoomsCall,
+    userRoomsSuccess,
+    userRoomsFailed,
+    userRoomAddCall,
+    userRoomUpdatedSuccess,
+    userRoomUpdatedFailed,
+    userRoomAddedSuccess,
+    userRoomAddedFailed,
+};
