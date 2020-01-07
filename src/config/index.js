@@ -9,16 +9,16 @@ export const envNameConfig = {
 
 const listConfigs = {
     [envNameConfig.dev]: {
-        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
+        API_SERVER: 'http://localhost:5002/',
     },
     [envNameConfig.qc]: {
-        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
+        API_SERVER: 'http://localhost:5002/',
     },
     [envNameConfig.uat]: {
-        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
+        API_SERVER: 'http://localhost:5002/',
     },
     [envNameConfig.production]: {
-        API_SERVER: 'https://chater-server.nghiweb.now.sh/',
+        API_SERVER: 'http://localhost:5002/',
     },
 };
 

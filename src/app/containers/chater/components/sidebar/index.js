@@ -1,26 +1,38 @@
 import React, { memo, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose, bindActionCreators } from 'redux';
-import { createStructuredSelector } from 'reselect';
+import { useSelector, useDispatch } from 'react-redux';
+import { withApollo } from 'react-apollo';
 import { Box, Text, Button, TextInput } from 'grommet';
 import { Clear, Search, Chat, Archive, User, SettingsOption } from 'grommet-icons';
 import { onCallConfirmAction } from 'app/components/confirmPopup/action';
-import { makeSelectStatusConfirmAction } from 'app/components/confirmPopup/selector';
+import { MONGO_OPS } from 'app/consts';
 import { roomCallSelected } from '../../saga/room/action';
 import { makeSelectRooms, makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
+import { userRoomsCall } from '../../saga/user-room/action';
 
-const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected, onCallConfirmAction }) => {
+const Sidebar = ({ client }) => {
+    const { query } = client;
+    const dispatch = useDispatch();
+    const isLoading = useSelector(makeSelectLoadingRooms());
+    const rooms = useSelector(makeSelectRooms());
+    const roomSelected = useSelector(makeSelectRoom());
     const selectRoom = useCallback(
         item => {
-            roomCallSelected(item);
+            const params = {
+                room: {
+                    value: item._id,
+                    op: MONGO_OPS.EQUA,
+                },
+            };
+            console.log(params);
+            dispatch(roomCallSelected(item, query));
+            dispatch(userRoomsCall(query, params));
         },
-        [roomCallSelected],
+        [dispatch, query],
     );
 
     const logout = useCallback(() => {
-        onCallConfirmAction('Are you sure you want to log out?');
-    }, [onCallConfirmAction]);
+        dispatch(onCallConfirmAction('Are you sure you want to log out?'));
+    }, [dispatch]);
 
     const renderRooms = () => {
         if (isLoading) return <>🐶 Fetching...</>;
@@ -181,30 +193,4 @@ const Sidebar = ({ rooms, isLoading, roomCallSelected, roomSelected, onCallConfi
     );
 };
 
-Sidebar.propTypes = {
-    roomCallSelected: PropTypes.func,
-    roomSelected: PropTypes.object,
-    rooms: PropTypes.array,
-    currentUser: PropTypes.object,
-    isLoading: PropTypes.bool,
-    logoutAction: PropTypes.func,
-    roomCall: PropTypes.func,
-    client: PropTypes.any,
-    data: PropTypes.array,
-    onCallConfirmAction: PropTypes.func,
-    logoutCall: PropTypes.func,
-    confirmStatus: PropTypes.string,
-};
-
-const mapStateToProps = createStructuredSelector({
-    rooms: makeSelectRooms(),
-    roomSelected: makeSelectRoom(),
-    isLoading: makeSelectLoadingRooms(),
-    confirmStatus: makeSelectStatusConfirmAction(),
-});
-
-const mapDispatchToProps = dispatch => bindActionCreators({ roomCallSelected, onCallConfirmAction }, dispatch);
-
-const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
-export default compose(withConnect, memo)(Sidebar);
+export default withApollo(memo(Sidebar));

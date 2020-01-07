@@ -16,9 +16,10 @@ export const roomCalFailed = error => ({
     ...error,
 });
 
-export const roomCallSelected = data => ({
+export const roomCallSelected = (data, query) => ({
     type: nameConst.ROOM_SELECTED,
     room: data,
+    query: query,
 });
 
 export const roomCallSelectedSuccess = data => ({

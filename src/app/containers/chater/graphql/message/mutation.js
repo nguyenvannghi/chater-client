@@ -1,12 +1,6 @@
 import gql from 'graphql-tag';
 const CREATE_MESSAGE = gql`
-    mutation createMessage(
-        $user_id: IdInput!
-        $room_id: RoomInput!
-        $message_body: String
-        $message_status: Boolean
-        $created_by: IdInput
-    ) {
+    mutation createMessage($user_id: IdInput!, $room_id: IdInput!, $message_body: String, $message_status: Boolean, $created_by: IdInput) {
         addMessage(
             user_id: $user_id
             room_id: $room_id

@@ -1,9 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState, useRef, memo } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose, bindActionCreators } from 'redux';
-import { createStructuredSelector } from 'reselect';
+import { useSelector, useDispatch } from 'react-redux';
 import { Box, Text, Button, Menu } from 'grommet';
 import { AddCircle, Camera, Apps, User } from 'grommet-icons';
 import { useSubscription } from '@apollo/react-hooks';
@@ -21,11 +19,16 @@ import { messageCall } from '../../saga/message/action';
 import MessageInput from '../message-input';
 import BgChat from 'app/assets/authentication-bg.jpg';
 
-const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQueries, userRooms, isLoading }) => {
+const ChatBox = ({ client, currentUser }) => {
     const { query } = client;
     const messageListRef = useRef();
     const [isOpenAddPeople, setOpenAddPeople] = useState(false);
     const [messages, setMessages] = useState();
+    const dispatch = useDispatch();
+    const userRooms = useSelector(makeSelectRooms());
+    const messageQueries = useSelector(makeSelectMessages());
+    const roomSelected = useSelector(makeSelectRoom());
+    const isLoading = useSelector(makeSelectLoadingMessages());
 
     useSubscription(MESSAGE_ADD_SUB, {
         onSubscriptionData: ({ _client, subscriptionData }) => {
@@ -54,7 +57,7 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
                     value: roomSelected._id,
                 },
             };
-            messageCall(query, params);
+            dispatch(messageCall(query, params));
         }
     }, [roomSelected, messageCall]);
 
@@ -270,27 +273,9 @@ const ChatBox = ({ client, currentUser, roomSelected, messageCall, messageQuerie
     );
 };
 
-ChatBox.defaultProps = {
-    userRooms: [],
-};
-
 ChatBox.propTypes = {
-    messageCall: PropTypes.func,
     client: PropTypes.any,
-    data: PropTypes.array,
-    messageQueries: PropTypes.array,
-    userRooms: PropTypes.array,
+    currentUser: PropTypes.object,
 };
 
-const mapStateToProps = createStructuredSelector({
-    roomSelected: makeSelectRoom(),
-    userRooms: makeSelectRooms(),
-    messageQueries: makeSelectMessages(),
-    isLoading: makeSelectLoadingMessages(),
-});
-
-const mapDispatchToProps = dispatch => bindActionCreators({ messageCall }, dispatch);
-
-const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
-export default withApollo(compose(withConnect, memo)(ChatBox));
+export default withApollo(memo(ChatBox));

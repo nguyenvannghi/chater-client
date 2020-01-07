@@ -2,12 +2,13 @@ import { put, take, call, fork } from 'redux-saga/effects';
 import { loadingOpen, loadingClose } from 'app/components/loadingApp/action';
 import { GET_USER_ROOMS } from 'app/containers/chater/graphql/user-room/queries';
 import { CREATE_USER_ROOM, UPDATE_USER_ROOM } from 'app/containers/chater/graphql/user-room/mutation';
+import { FETCH_POLICY } from 'app/consts';
 
 import * as nameEvents from './action';
 import * as nameConst from './const';
 
 const userRoomsCallApi = (query, params) => {
-    return query({ query: GET_USER_ROOMS, variables: params })
+    return query({ query: GET_USER_ROOMS, fetchPolicy: FETCH_POLICY.NETWORK_ONLY, variables: params })
         .then(res => {
             return res;
         })
@@ -34,6 +35,7 @@ function* userRoomsSaga() {
     while (true) {
         const { query, params } = yield take(nameConst.USER_ROOM_CALL);
         const result = yield call(userRoomsCallApi, query, params);
+        console.log(result);
         if (result && !result.data) {
             yield put(nameEvents.userRoomsFailed(result));
         } else {
