@@ -1,9 +1,11 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { withApollo } from 'react-apollo';
 import { Box, Text, Button, TextInput } from 'grommet';
 import { Clear, Search, Chat, Archive, User, SettingsOption } from 'grommet-icons';
 import { onCallConfirmAction } from 'app/components/confirmPopup/action';
+import { makeSelectStatusConfirmAction } from 'app/components/confirmPopup/selector';
+import { logoutCall } from 'app/containers/signin/saga/action';
 import { roomCallSelectedSuccess } from '../../saga/room/action';
 import { makeSelectRooms, makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
 
@@ -12,6 +14,12 @@ const Sidebar = () => {
     const isLoading = useSelector(makeSelectLoadingRooms());
     const rooms = useSelector(makeSelectRooms());
     const roomSelected = useSelector(makeSelectRoom());
+    const confirmStatus = useSelector(makeSelectStatusConfirmAction());
+
+    useEffect(() => {
+        dispatch(logoutCall(confirmStatus.data, confirmStatus.key));
+    }, [confirmStatus.data, confirmStatus.key, dispatch]);
+
     const selectRoom = useCallback(
         item => {
             dispatch(roomCallSelectedSuccess(item));
@@ -20,7 +28,7 @@ const Sidebar = () => {
     );
 
     const logout = useCallback(() => {
-        dispatch(onCallConfirmAction('Are you sure you want to log out?'));
+        dispatch(onCallConfirmAction('Are you sure you want to log out?', 'LOG_OUT'));
     }, [dispatch]);
 
     const renderRooms = () => {

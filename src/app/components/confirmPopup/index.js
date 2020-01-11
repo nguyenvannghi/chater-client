@@ -7,9 +7,9 @@ import { createStructuredSelector } from 'reselect';
 import ToastLayer from '../toast-layer';
 
 import { makeSelectConfirmAction, makeSelectConfirmMessage, makeSelectConfirmActions } from './selector';
-import { onCancelAction, onOkAction, onResetAction } from './action';
+import { onCancelAction, onOkAction } from './action';
 
-const ConfirmPopup = ({ message, actions, isClose, onCancelAction, onOkAction, onResetAction }) => {
+const ConfirmPopup = ({ message, actions, isClose, onCancelAction, onOkAction }) => {
     const onClose = useCallback(() => {
         onCancelAction();
     }, [onCancelAction]);
@@ -63,7 +63,7 @@ const mapStateToProps = createStructuredSelector({
     actions: makeSelectConfirmActions(),
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ onCancelAction, onOkAction, onResetAction }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ onCancelAction, onOkAction }, dispatch);
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

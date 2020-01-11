@@ -4,6 +4,7 @@ import { COMMON_CALL_CONFIRM_ACTION, COMMON_OK_ACTION, COMMON_CANCEL_ACTION, COM
 export const initialState = {
     data: null,
     isClose: true,
+    key: null,
     message: null,
     actions: {
         ok: 'Ok',
@@ -16,6 +17,7 @@ const ActionConfirm = (state = initialState, action) => {
         case COMMON_CALL_CONFIRM_ACTION:
             return produce(state, draft => {
                 draft.data = initialState.data;
+                draft.key = action.key;
                 draft.message = action.message;
                 draft.actions = action.actions;
                 draft.isClose = false;
@@ -35,6 +37,13 @@ const ActionConfirm = (state = initialState, action) => {
                 draft.isClose = true;
             });
         case COMMON_RESET_ACTION:
+            return produce(state, draft => {
+                draft.data = initialState.data;
+                draft.key = initialState.key;
+                draft.message = initialState.message;
+                draft.actions = initialState.actions;
+                draft.isClose = true;
+            });
         default:
             return state;
     }

@@ -17,7 +17,7 @@ const setFormControlValue = (data, schema, setValue) => {
 };
 
 const getCurrentUser = () => {
-    return JWT(getCookie(listCookieStorageName.access_token));
+    return getCookie(listCookieStorageName.access_token) && JWT(getCookie(listCookieStorageName.access_token));
 };
 
 const EmojiNativeToIDParser = text => {

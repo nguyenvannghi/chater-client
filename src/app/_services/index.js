@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import axios from 'axios';
+import { logoutAction } from 'app/_services/authAction';
 
 class API {
     constructor(baseUrl, headersConfig, restParams) {
@@ -19,7 +20,7 @@ class API {
                 if (response) {
                     switch (response.status) {
                         case 401: // Unauthorized (khong co quyen truy cap)
-                            this.logOutCall();
+                            logoutAction();
                             return;
                         case 403: // Forbidden (cam)
                             // history.push(routerHasLogin.error403);

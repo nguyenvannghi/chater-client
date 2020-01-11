@@ -1,4 +1,4 @@
-import React, { memo, lazy, Suspense, useState, useEffect } from 'react';
+import React, { memo, lazy, useState, useEffect, Suspense } from 'react';
 import PropTypes from 'prop-types';
 import { compose, bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -10,15 +10,43 @@ import history from './history';
 import { listCookieStorageName, getCookie } from '../_utils/cookieStorage';
 import { makeSelectLoginStatus } from 'app/containers/signin/saga/selector';
 import { loginCallSuccess } from 'app/containers/signin/saga/action';
+import LoadingComp from 'app/components/loadingComp';
+
+import AllRouter from './routersApp';
+import RouterApp from './const';
 
 // not support for server-side rendering
-const Home = lazy(() => import('app/containers/home'));
-const About = lazy(() => import('app/containers/about'));
 const SignIn = lazy(() => import('app/containers/signin'));
-const Chater = lazy(() => import('app/containers/chater'));
 
 const Routers = ({ isLoginStatus, loginCallSuccess }) => {
     const [isLogin, setIsLogin] = useState(false);
+
+    const routesMatch = [];
+
+    const onceRouter = route => <Route key={Math.random()} {...route} />;
+
+    const routerListNav = data => {
+        data.forEach(route => {
+            if (Object.prototype.hasOwnProperty.call(route, 'sub')) {
+                routerListNav(route.sub);
+            } else if (Object.prototype.hasOwnProperty.call(route, 'childs')) {
+                route.childs.forEach(item => {
+                    routesMatch.push(onceRouter(item));
+                });
+
+                const routeParent = {
+                    title: route.title,
+                    path: route.path,
+                    component: route.component,
+                };
+                routesMatch.push(onceRouter(routeParent));
+            } else {
+                routesMatch.push(onceRouter(route));
+            }
+        });
+
+        return routesMatch;
+    };
 
     useEffect(() => {
         if (!isEmpty(getCookie(listCookieStorageName.access_token))) {
@@ -29,56 +57,38 @@ const Routers = ({ isLoginStatus, loginCallSuccess }) => {
         } else {
             setIsLogin(isLoginStatus);
         }
-    }, [isLoginStatus, setIsLogin, isLogin, loginCallSuccess]);
+    }, [isLoginStatus, loginCallSuccess]);
 
     return (
         <ConnectedRouter history={history}>
-            <Suspense fallback={<div>Loading...</div>}>
-                {!isLogin ? (
-                    <>
-                        <Switch>
-                            <Redirect to="/sign-in" />
-                        </Switch>
-
-                        <Route path="/sign-in">
-                            <SignIn />
-                        </Route>
-                    </>
-                ) : (
-                    <>
-                        {/* <nav>
-                            <ul>
-                                <li>
-                                    <Link to="/home">Home</Link>
-                                </li>
-                                <li>
-                                    <Link to="/about">useState</Link>
-                                </li>
-                                <li>
-                                    <Link to="/use-reducer">UseReducer</Link>
-                                </li>
-                                <li>
-                                    <Link to="/sign-in">SignIn</Link>
-                                </li>
-                                <li>
-                                    <Link to="/">Chater</Link>
-                                </li>
-                            </ul>
-                        </nav> */}
-                        <Switch>
-                            <Route path="/about">
-                                <About />
-                            </Route>
-                            <Route path="/">
-                                <Chater />
-                            </Route>
-                            <Route path="/home">
-                                <Home />
-                            </Route>
-                        </Switch>
-                    </>
-                )}
-            </Suspense>
+            {!isLogin ? (
+                <Suspense fallback={<LoadingComp />}>
+                    <Switch>
+                        <Redirect to="/sign-in" />
+                    </Switch>
+                    <Route path="/sign-in">
+                        <SignIn />
+                    </Route>
+                </Suspense>
+            ) : (
+                <>
+                    {/* <nav>
+                        <ul>
+                            <li>
+                                <Link to="/home">Home</Link>
+                            </li>
+                            <li>
+                                <Link to="/about">About</Link>
+                            </li>
+                            <li>
+                                <Link to="/">Chater</Link>
+                            </li>
+                        </ul>
+                    </nav> */}
+                    {routerListNav(AllRouter)}
+                    <Redirect path="*" to={RouterApp.rChater} />
+                </>
+            )}
         </ConnectedRouter>
     );
 };

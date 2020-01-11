@@ -6,7 +6,8 @@ const selectAction = state => state.reducerConfirmAction || initialState;
 
 const makeSelectConfirmAction = () => createSelector(selectAction, selectAction => selectAction.isClose);
 
-const makeSelectStatusConfirmAction = () => createSelector(selectAction, selectAction => selectAction.data);
+const makeSelectStatusConfirmAction = () =>
+    createSelector(selectAction, selectAction => ({ data: selectAction.data, key: selectAction.key }));
 
 const makeSelectConfirmMessage = () => createSelector(selectAction, selectAction => selectAction.message);
 

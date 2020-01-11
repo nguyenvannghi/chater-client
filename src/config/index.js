@@ -11,14 +11,8 @@ const listConfigs = {
     [envNameConfig.dev]: {
         API_SERVER: 'http://localhost:5002/',
     },
-    [envNameConfig.qc]: {
-        API_SERVER: 'http://localhost:5002/',
-    },
-    [envNameConfig.uat]: {
-        API_SERVER: 'http://localhost:5002/',
-    },
     [envNameConfig.production]: {
-        API_SERVER: 'http://localhost:5002/',
+        API_SERVER: 'https://chater-server.now.sh/',
     },
 };
 

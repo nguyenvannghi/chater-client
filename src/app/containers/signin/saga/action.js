@@ -6,8 +6,10 @@ export const loginCall = (mutation, params) => ({
     params: params,
 });
 
-export const logoutCall = () => ({
+export const logoutCall = (status, key) => ({
     type: nameConst.LOGOUT_CALL,
+    status: status,
+    key: key,
 });
 
 export const loginCallSuccess = data => ({
