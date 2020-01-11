@@ -8,7 +8,7 @@ import * as nameEvents from './action';
 import * as nameConst from './const';
 
 const userRoomsCallApi = (query, params) => {
-    return query({ query: GET_USER_ROOMS, fetchPolicy: FETCH_POLICY.NETWORK_ONLY, variables: params })
+    return query({ query: GET_USER_ROOMS, fetchPolicy: FETCH_POLICY.NETWORK_ONLY, variables: { where: params } })
         .then(res => {
             return res;
         })

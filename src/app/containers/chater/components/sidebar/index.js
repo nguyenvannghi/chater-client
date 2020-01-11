@@ -4,29 +4,19 @@ import { withApollo } from 'react-apollo';
 import { Box, Text, Button, TextInput } from 'grommet';
 import { Clear, Search, Chat, Archive, User, SettingsOption } from 'grommet-icons';
 import { onCallConfirmAction } from 'app/components/confirmPopup/action';
-import { MONGO_OPS } from 'app/consts';
-import { roomCallSelected } from '../../saga/room/action';
+import { roomCallSelectedSuccess } from '../../saga/room/action';
 import { makeSelectRooms, makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
-import { userRoomsCall } from '../../saga/user-room/action';
 
-const Sidebar = ({ client }) => {
-    const { query } = client;
+const Sidebar = () => {
     const dispatch = useDispatch();
     const isLoading = useSelector(makeSelectLoadingRooms());
     const rooms = useSelector(makeSelectRooms());
     const roomSelected = useSelector(makeSelectRoom());
     const selectRoom = useCallback(
         item => {
-            const params = {
-                room: {
-                    value: item._id,
-                    op: MONGO_OPS.EQUA,
-                },
-            };
-            dispatch(roomCallSelected(item, query));
-            dispatch(userRoomsCall(query, params));
+            dispatch(roomCallSelectedSuccess(item));
         },
-        [dispatch, query],
+        [dispatch],
     );
 
     const logout = useCallback(() => {
@@ -50,9 +40,8 @@ const Sidebar = ({ client }) => {
                         fill="horizontal"
                         flex="shrink"
                         background={{ color: roomSelected && roomSelected._id === item._id ? 'dark-3' : '', opacity: 'medium' }}
-                        onClick={e => {
+                        onClick={() => {
                             selectRoom(item);
-                            e.preventDefault();
                         }}>
                         <Box
                             align="center"

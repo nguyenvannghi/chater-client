@@ -16,7 +16,9 @@ const messageCallApi = (query, params) => {
 
 function* messageSaga() {
     while (true) {
-        const { query, params } = yield take(nameConst.MESSAGE_CALL);
+        const {
+            payload: { query, params },
+        } = yield take(nameConst.MESSAGE_CALL);
         yield put(loadingOpen());
         const result = yield call(messageCallApi, query, params);
         if (result && !result.data) {

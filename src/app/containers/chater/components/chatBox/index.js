@@ -48,6 +48,7 @@ const ChatBox = ({ client, currentUser }) => {
             }
         },
     });
+
     useEffect(() => {
         if (roomSelected) {
             setMessages(null);

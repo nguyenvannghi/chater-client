@@ -2,12 +2,13 @@ import { put, take, call, fork } from 'redux-saga/effects';
 import { loadingOpen, loadingClose } from 'app/components/loadingApp/action';
 import { GET_ROOMS } from 'app/containers/chater/graphql/room/queries';
 import { UPDATE_ROOM } from 'app/containers/chater/graphql/room/mutation';
+import { FETCH_POLICY } from 'app/consts';
 
 import * as nameEvents from './action';
 import * as nameConst from './const';
 
 const roomCallApi = (query, params) => {
-    return query({ query: GET_ROOMS, variables: params })
+    return query({ query: GET_ROOMS, fetchPolicy: FETCH_POLICY.NETWORK_ONLY, variables: params })
         .then(res => {
             return res;
         })
@@ -30,9 +31,7 @@ function* roomSaga() {
         if (result && !result.data) {
             yield put(nameEvents.roomCalFailed(result));
         } else {
-            const { rooms } = result.data;
             yield put(nameEvents.roomCallSuccess(result));
-            yield put(nameEvents.roomCallSelectedSuccess(rooms[0]));
         }
         yield put(loadingClose());
     }
