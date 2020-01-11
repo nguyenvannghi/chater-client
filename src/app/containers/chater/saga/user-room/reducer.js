@@ -19,6 +19,7 @@ const userRoomReducer = createReducer(initialState, {
     [nameAction.userRoomsSuccess]: produce((draft, action) => {
         const { payload } = action;
         const { userRooms } = action.payload.data;
+        console.log();
         draft.userRooms = userRooms;
         draft.isLoading = payload.loading;
         draft.error = initialState.error;

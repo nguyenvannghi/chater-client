@@ -5,8 +5,9 @@ import { initialState } from './reducer';
 
 const selectRoomState = state => state[USER_ROOM_KEY_REDUCER_SAGA] || initialState;
 
-const makeSelectRooms = () => createSelector(selectRoomState, selectRoomState => selectRoomState.userRooms);
+const makeSelectUserRooms = () =>
+    createSelector(selectRoomState, selectRoomState => selectRoomState.userRooms && selectRoomState.userRooms.map(item => item.user));
 
 const makeSelectError = () => createSelector(selectRoomState, selectRoomState => selectRoomState.error);
 
-export { makeSelectRooms, makeSelectError };
+export { makeSelectUserRooms, makeSelectError };

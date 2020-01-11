@@ -13,7 +13,7 @@ import { EmojiServerToClientParser } from 'app/consts/helper';
 import { MESSAGE_ADD_SUB } from 'app/containers/chater/graphql';
 import AddPeoplePopup from '../add-people';
 import { makeSelectRoom } from '../../saga/room/selector';
-import { makeSelectRooms } from '../../saga/user-room/selector';
+import { makeSelectUserRooms } from '../../saga/user-room/selector';
 import { makeSelectMessages, makeSelectLoadingMessages } from '../../saga/message/selector';
 import { messageCall } from '../../saga/message/action';
 import MessageInput from '../message-input';
@@ -25,7 +25,7 @@ const ChatBox = ({ client, currentUser }) => {
     const [isOpenAddPeople, setOpenAddPeople] = useState(false);
     const [messages, setMessages] = useState();
     const dispatch = useDispatch();
-    const userRooms = useSelector(makeSelectRooms());
+    const userRooms = useSelector(makeSelectUserRooms());
     const messageQueries = useSelector(makeSelectMessages());
     const roomSelected = useSelector(makeSelectRoom());
     const isLoading = useSelector(makeSelectLoadingMessages());

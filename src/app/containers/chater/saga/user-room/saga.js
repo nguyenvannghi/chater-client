@@ -47,7 +47,9 @@ function* userRoomsSaga() {
 
 function* userRoomAddSaga() {
     while (true) {
-        const { mutation, params } = yield take(nameConst.USER_ROOM_ADD_CALL);
+        const {
+            payload: { mutation, params },
+        } = yield take(nameConst.USER_ROOM_ADD_CALL);
         yield put(loadingOpen());
         const result = yield call(userRoomAddApi, mutation, params);
         if (result && !result.data) {
@@ -61,7 +63,9 @@ function* userRoomAddSaga() {
 
 function* userRoomUpdateSaga() {
     while (true) {
-        const { mutation, params } = yield take(nameConst.USER_ROOM_UPDATE_CALL);
+        const {
+            payload: { mutation, params },
+        } = yield take(nameConst.USER_ROOM_UPDATE_CALL);
         yield put(loadingOpen());
         const result = yield call(userRoomUpdateApi, mutation, params);
         if (result && !result.data) {

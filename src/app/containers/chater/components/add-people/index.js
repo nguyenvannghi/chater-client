@@ -1,22 +1,24 @@
 import React, { memo, useCallback, useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { withApollo } from 'react-apollo';
-import { compose, bindActionCreators } from 'redux';
 import { Box, Button, Text, TextInput } from 'grommet';
 import { Actions, Close } from 'grommet-icons';
 import { debounce, isEmpty } from 'lodash';
-import { createStructuredSelector } from 'reselect';
 import ToastLayer from 'app/components/toast-layer';
 import { MONGO_OPS, MONGO_LOGIS } from 'app/consts';
 import { userCall } from '../../saga/user/action';
 import { userRoomAddCall } from '../../saga/user-room/action';
 import { makeSelectUsers } from '../../saga/user/selector';
 import { makeSelectRoom } from '../../saga/room/selector';
-import { makeSelectRooms } from '../../saga/user-room/selector';
+import { makeSelectUserRooms } from '../../saga/user-room/selector';
 
-const AddPeoplePopup = ({ client, isOpen, onClose, userCall, userRoomAddCall, users, roomSelected, userRooms }) => {
+const AddPeoplePopup = ({ client, isOpen, onClose }) => {
     const { query, mutate } = client;
+    const dispatch = useDispatch();
+    const userRooms = useSelector(makeSelectUserRooms());
+    const roomSelected = useSelector(makeSelectRoom());
+    const users = useSelector(makeSelectUsers());
     const textInput = useRef();
     const [peoples, setPeoples] = useState(null);
     const [isSuggest, setIsSuggest] = useState(false);
@@ -47,7 +49,7 @@ const AddPeoplePopup = ({ client, isOpen, onClose, userCall, userRoomAddCall, us
                 };
                 let users = [];
                 if (userRooms && userRooms.length > 0) {
-                    users = userRooms.map(item => item._id);
+                    users = userRooms;
                 }
                 if (peoples && peoples.length > 0) {
                     users.concat(peoples);
@@ -60,9 +62,9 @@ const AddPeoplePopup = ({ client, isOpen, onClose, userCall, userRoomAddCall, us
                         },
                     });
                 }
-                userCall(query, params);
+                dispatch(userCall(query, params));
             },
-            [userCall, query, peoples, userRooms],
+            [query, peoples, userRooms, dispatch],
         ),
         400,
     );
@@ -96,13 +98,13 @@ const AddPeoplePopup = ({ client, isOpen, onClose, userCall, userRoomAddCall, us
                     type: 'MEMBER',
                     status: true,
                 };
-                userRoomAddCall(mutate, params);
+                dispatch(userRoomAddCall(mutate, params));
             });
 
             setPeoples(null);
             onClose();
         }
-    }, [peoples, mutate, userRoomAddCall, roomSelected, onClose]);
+    }, [peoples, mutate, roomSelected, onClose, dispatch]);
 
     return (
         isOpen && (
@@ -178,23 +180,10 @@ AddPeoplePopup.defaultProps = {
 };
 
 AddPeoplePopup.propTypes = {
-    userRooms: PropTypes.array,
-    userRoomAddCall: PropTypes.func,
-    userCall: PropTypes.func,
     onClose: PropTypes.func,
     onResetAction: PropTypes.func,
     isOpen: PropTypes.bool,
     roomSelected: PropTypes.object,
 };
 
-const mapStateToProps = createStructuredSelector({
-    users: makeSelectUsers(),
-    userRooms: makeSelectRooms(),
-    roomSelected: makeSelectRoom(),
-});
-
-const mapDispatchToProps = dispatch => bindActionCreators({ userCall, userRoomAddCall }, dispatch);
-
-const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
-export default withApollo(compose(withConnect, memo)(AddPeoplePopup));
+export default withApollo(memo(AddPeoplePopup));

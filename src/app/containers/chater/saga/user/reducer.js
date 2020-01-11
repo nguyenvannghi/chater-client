@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
+import { createReducer } from '@reduxjs/toolkit';
 import produce from 'immer';
-import * as nameConst from './const';
+import * as nameAction from './action';
 
 export const initialState = {
     error: null,
@@ -8,23 +9,25 @@ export const initialState = {
     isLoading: true,
 };
 
-const userReducer = (state = initialState, action) =>
-    produce(state, draft => {
-        switch (action.type) {
-            case nameConst.USER_CALL_SUCCESS:
-                const { users } = action.query.data;
-                draft.users = users;
-                draft.isLoading = action.query.loading;
-                draft.error = initialState.error;
-                return draft;
-            case nameConst.USER_CALL_FAILED:
-                draft.users = initialState.users;
-                draft.isLoading = initialState.isLoading;
-                draft.error = action.error;
-                return draft;
-            default:
-                return draft;
-        }
-    });
+const userReducer = createReducer(initialState, {
+    [nameAction.userCall]: produce(draft => {
+        draft.isLoading = true;
+        return draft;
+    }),
+    [nameAction.userCallSuccess]: produce((draft, action) => {
+        const { payload } = action;
+        const { users } = action.payload.data;
+        draft.users = users;
+        draft.isLoading = payload.loading;
+        draft.error = initialState.error;
+        return draft;
+    }),
+    [nameAction.userCallFailed]: produce((draft, action) => {
+        draft.users = initialState.users;
+        draft.isLoading = initialState.isLoading;
+        draft.error = action.error;
+        return draft;
+    }),
+});
 
 export default userReducer;
