@@ -30,5 +30,5 @@ Run `now` or `now --prod`
 See document: [https://zeit.co/docs/v2/introduction/](https://zeit.co/docs/v2/introduction/)
 
 ### Account demo:
-- abama/123456
+- honganh/123456
 - nghiweb/123456
