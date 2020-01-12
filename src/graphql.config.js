@@ -10,9 +10,11 @@ import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { listCookieStorageName, getCookie } from 'app/_utils/cookieStorage';
 import { logoutAction } from 'app/_services/authAction';
 import { Config } from 'config';
-const clientSub = new SubscriptionClient(Config.SOCKET, {
+const clientSub = new SubscriptionClient(Config.API_SOCKET, {
+    timeout: 60000,
     reconnect: true,
 });
+clientSub.maxConnectTimeGenerator.duration = () => clientSub.maxConnectTimeGenerator.max;
 
 const wsLink = new WebSocketLink(clientSub);
 const httpLink = new HttpLink({ uri: Config.API_SERVER });
