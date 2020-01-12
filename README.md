@@ -26,7 +26,7 @@ The build is minified and the filenames include the hashes.<br />
 Your app is ready to be deployed!
 
 ### Deployment
-
+Run `now` or `now --prod`
 See document: [https://zeit.co/docs/v2/introduction/](https://zeit.co/docs/v2/introduction/)
 
 ### Account demo:
