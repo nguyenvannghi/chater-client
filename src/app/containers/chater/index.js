@@ -10,10 +10,10 @@ import { MONGO_OPS } from 'app/consts';
 import { injectRoomSaga, injectMessageSaga, injectUserSaga, injectUserRoomSaga } from './injectReducerSaga';
 import { roomCall } from './saga/room/action';
 import { makeSelectRoom } from './saga/room/selector';
-import { userRoomsCall } from './saga/user-room/action';
+import { userRoomsCall, roomUserCall } from './saga/user-room/action';
 import { ChatBox, Sidebar } from './components';
 
-const Chater = ({ client, roomSelected, roomCall, userRoomsCall }) => {
+const Chater = ({ client, roomSelected, roomCall, userRoomsCall, roomUserCall }) => {
     injectRoomSaga();
     injectMessageSaga();
     injectUserSaga();
@@ -42,7 +42,16 @@ const Chater = ({ client, roomSelected, roomCall, userRoomsCall }) => {
             };
             userRoomsCall(query, params);
         }
-    }, [userRoomsCall, query, roomSelected]);
+        if (currentUser) {
+            const params = {
+                user: {
+                    value: currentUser._id,
+                    op: MONGO_OPS.EQUA,
+                },
+            };
+            roomUserCall(query, params);
+        }
+    }, [userRoomsCall, roomUserCall, currentUser, query, roomSelected]);
 
     return (
         <Grid
@@ -73,7 +82,7 @@ const mapStateToProps = createStructuredSelector({
     roomSelected: makeSelectRoom(),
 });
 
-const mapDispatchToProps = dispatch => bindActionCreators({ roomCall, userRoomsCall }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ roomCall, userRoomsCall, roomUserCall }, dispatch);
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

@@ -15,6 +15,14 @@ const userRoomsCallApi = (query, params) => {
         .catch(err => err);
 };
 
+const roomUsersCallApi = (query, params) => {
+    return query({ query: GET_USER_ROOMS, fetchPolicy: FETCH_POLICY.NETWORK_ONLY, variables: { where: params } })
+        .then(res => {
+            return res;
+        })
+        .catch(err => err);
+};
+
 const userRoomAddApi = (mutation, params) => {
     return mutation({ mutation: CREATE_USER_ROOM, variables: params })
         .then(res => {
@@ -41,6 +49,20 @@ function* userRoomsSaga() {
             yield put(nameEvents.userRoomsFailed(result));
         } else {
             yield put(nameEvents.userRoomsSuccess(result));
+        }
+    }
+}
+
+function* roomUserSaga() {
+    while (true) {
+        const {
+            payload: { query, params },
+        } = yield take(nameConst.ROOM_USER_CALL);
+        const result = yield call(roomUsersCallApi, query, params);
+        if (result && !result.data) {
+            yield put(nameEvents.roomUserFailed(result));
+        } else {
+            yield put(nameEvents.roomUserSuccess(result));
         }
     }
 }
@@ -79,6 +101,7 @@ function* userRoomUpdateSaga() {
 
 export default function* root() {
     yield fork(userRoomsSaga);
+    yield fork(roomUserSaga);
     yield fork(userRoomAddSaga);
     yield fork(userRoomUpdateSaga);
 }

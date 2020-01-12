@@ -7,14 +7,15 @@ import { onCallConfirmAction } from 'app/components/confirmPopup/action';
 import { makeSelectStatusConfirmAction } from 'app/components/confirmPopup/selector';
 import { logoutCall } from 'app/containers/signin/saga/action';
 import { roomCallSelectedSuccess } from '../../saga/room/action';
-import { makeSelectRooms, makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
+import { makeSelectLoadingRooms, makeSelectRoom } from '../../saga/room/selector';
+import { makeSelectRoomUsers } from '../../saga/user-room/selector';
 
 const Sidebar = () => {
     const dispatch = useDispatch();
     const isLoading = useSelector(makeSelectLoadingRooms());
-    const rooms = useSelector(makeSelectRooms());
     const roomSelected = useSelector(makeSelectRoom());
     const confirmStatus = useSelector(makeSelectStatusConfirmAction());
+    const rooms = useSelector(makeSelectRoomUsers());
 
     useEffect(() => {
         dispatch(logoutCall(confirmStatus.data, confirmStatus.key));

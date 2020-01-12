@@ -1,5 +1,7 @@
+/* eslint-disable no-param-reassign */
+import { createReducer } from '@reduxjs/toolkit';
 import produce from 'immer';
-import { COMMON_CALL_CONFIRM_ACTION, COMMON_OK_ACTION, COMMON_CANCEL_ACTION, COMMON_RESET_ACTION } from './const';
+import * as nameAction from './action';
 
 export const initialState = {
     data: null,
@@ -12,41 +14,40 @@ export const initialState = {
     },
 };
 
-const ActionConfirm = (state = initialState, action) => {
-    switch (action.type) {
-        case COMMON_CALL_CONFIRM_ACTION:
-            return produce(state, draft => {
-                draft.data = initialState.data;
-                draft.key = action.key;
-                draft.message = action.message;
-                draft.actions = action.actions;
-                draft.isClose = false;
-            });
-        case COMMON_OK_ACTION:
-            return produce(state, draft => {
-                draft.data = action.data;
-                draft.message = initialState.message;
-                draft.actions = initialState.actions;
-                draft.isClose = true;
-            });
-        case COMMON_CANCEL_ACTION:
-            return produce(state, draft => {
-                draft.data = action.data;
-                draft.message = initialState.message;
-                draft.actions = initialState.actions;
-                draft.isClose = true;
-            });
-        case COMMON_RESET_ACTION:
-            return produce(state, draft => {
-                draft.data = initialState.data;
-                draft.key = initialState.key;
-                draft.message = initialState.message;
-                draft.actions = initialState.actions;
-                draft.isClose = true;
-            });
-        default:
-            return state;
-    }
-};
+const ActionConfirm = createReducer(initialState, {
+    [nameAction.onCallConfirmAction]: produce((draft, action) => {
+        const { payload } = action;
+        draft.data = initialState.data;
+        draft.key = payload.key;
+        draft.message = payload.message;
+        draft.actions = payload.actions;
+        draft.isClose = false;
+        return draft;
+    }),
+    [nameAction.onOkAction]: produce((draft, action) => {
+        const { payload } = action;
+        draft.data = payload;
+        draft.message = initialState.message;
+        draft.actions = initialState.actions;
+        draft.isClose = true;
+        return draft;
+    }),
+    [nameAction.onCancelAction]: produce((draft, action) => {
+        const { payload } = action;
+        draft.data = payload;
+        draft.message = initialState.message;
+        draft.actions = initialState.actions;
+        draft.isClose = true;
+        return draft;
+    }),
+    [nameAction.onResetAction]: produce(draft => {
+        draft.data = initialState.data;
+        draft.key = initialState.key;
+        draft.message = initialState.message;
+        draft.actions = initialState.actions;
+        draft.isClose = true;
+        return draft;
+    }),
+});
 
 export default ActionConfirm;

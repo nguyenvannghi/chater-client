@@ -11,6 +11,9 @@ const GET_USER_ROOMS = gql`
             room {
                 _id
                 name
+                topic
+                image_url
+                description
             }
             type
             status

@@ -5,6 +5,10 @@ const userRoomsCall = createAction(nameConst.USER_ROOM_CALL, (query, params) => 
 const userRoomsSuccess = createAction(nameConst.USER_ROOM_SUCCESS, data => ({ payload: data }));
 const userRoomsFailed = createAction(nameConst.USER_ROOM_FAILED, error => ({ payload: error }));
 
+const roomUserCall = createAction(nameConst.ROOM_USER_CALL, (query, params) => ({ payload: { query: query, params: params } }));
+const roomUserSuccess = createAction(nameConst.ROOM_USER_SUCCESS, data => ({ payload: data }));
+const roomUserFailed = createAction(nameConst.ROOM_USER_FAILED, error => ({ payload: error }));
+
 const userRoomUpdateCall = createAction(nameConst.USER_ROOM_UPDATE_CALL, (mutate, params) => ({
     payload: { mutation: mutate, params: params },
 }));
@@ -19,6 +23,9 @@ export {
     userRoomsCall,
     userRoomsSuccess,
     userRoomsFailed,
+    roomUserCall,
+    roomUserSuccess,
+    roomUserFailed,
     userRoomUpdateCall,
     userRoomUpdatedSuccess,
     userRoomUpdatedFailed,
