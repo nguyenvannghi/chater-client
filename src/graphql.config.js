@@ -9,12 +9,13 @@ import { WebSocketLink } from 'apollo-link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { listCookieStorageName, getCookie } from 'app/_utils/cookieStorage';
 import { logoutAction } from 'app/_services/authAction';
-const clientSub = new SubscriptionClient('ws://localhost:5002/subscriptions', {
+import { Config } from 'config';
+const clientSub = new SubscriptionClient(Config.SOCKET, {
     reconnect: true,
 });
 
 const wsLink = new WebSocketLink(clientSub);
-const httpLink = new HttpLink({ uri: 'http://localhost:5002/' });
+const httpLink = new HttpLink({ uri: Config.API_SERVER });
 const authMiddleware = new ApolloLink((operation, forward) => {
     const token = getCookie(listCookieStorageName.access_token);
     operation.setContext({

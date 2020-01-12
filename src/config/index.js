@@ -10,9 +10,11 @@ export const envNameConfig = {
 const listConfigs = {
     [envNameConfig.dev]: {
         API_SERVER: 'http://localhost:5002/',
+        API_SOCKET: 'ws://localhost:5002/subscriptions',
     },
     [envNameConfig.production]: {
         API_SERVER: 'https://chater-server.now.sh/',
+        API_SOCKET: 'wss://chater-server.now.sh/subscriptions',
     },
 };
 

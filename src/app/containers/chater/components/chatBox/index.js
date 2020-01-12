@@ -40,7 +40,7 @@ const ChatBox = ({ client, currentUser }) => {
                     const {
                         room: { _id },
                     } = messageAdded;
-                    if (roomSelected._id === _id) {
+                    if (roomSelected && roomSelected._id === _id) {
                         setMessages(prevMessage => (prevMessage ? [...prevMessage, messageAdded] : [messageAdded]));
                     }
                 }
