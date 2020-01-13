@@ -2,8 +2,6 @@ const env = process.env.REACT_APP_ENV;
 
 export const envNameConfig = {
     dev: 'dev',
-    qc: 'qc',
-    uat: 'uat',
     production: 'production',
 };
 
