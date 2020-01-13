@@ -1,24 +1,20 @@
-import React, { memo, lazy, useState, useEffect, Suspense } from 'react';
-import PropTypes from 'prop-types';
-import { compose, bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, { memo, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
-import { createStructuredSelector } from 'reselect';
 import { isEmpty } from 'lodash';
-import history from './history';
-import { listCookieStorageName, getCookie } from '../_utils/cookieStorage';
 import { makeSelectLoginStatus } from 'app/containers/signin/saga/selector';
 import { loginCallSuccess } from 'app/containers/signin/saga/action';
-import LoadingComp from 'app/components/loadingComp';
+import history from './history';
+import { listCookieStorageName, getCookie } from '../_utils/cookieStorage';
 
 import AllRouter from './routersApp';
-import RouterApp from './const';
+import RoutersNoAuth from './routerNoAuth';
+import { RouterApp, RouterNoAuth } from './const';
 
-// not support for server-side rendering
-const SignIn = lazy(() => import('app/containers/signin'));
-
-const Routers = ({ isLoginStatus, loginCallSuccess }) => {
+const Routers = () => {
+    const dispatch = useDispatch();
+    const isLoginStatus = useSelector(makeSelectLoginStatus());
     const [isLogin, setIsLogin] = useState(false);
 
     const routesMatch = [];
@@ -48,28 +44,33 @@ const Routers = ({ isLoginStatus, loginCallSuccess }) => {
         return routesMatch;
     };
 
+    const routerListNoAuth = data => {
+        const routers = [];
+        data.forEach(route => {
+            routers.push(onceRouter(route));
+        });
+
+        return routers;
+    };
+
     useEffect(() => {
         if (!isEmpty(getCookie(listCookieStorageName.access_token))) {
             setIsLogin(true);
             if (!isLoginStatus) {
-                loginCallSuccess();
+                dispatch(loginCallSuccess());
             }
         } else {
             setIsLogin(isLoginStatus);
         }
-    }, [isLoginStatus, loginCallSuccess]);
+    }, [dispatch, isLoginStatus]);
 
     return (
         <ConnectedRouter history={history}>
             {!isLogin ? (
-                <Suspense fallback={<LoadingComp />}>
-                    <Switch>
-                        <Redirect to="/sign-in" />
-                    </Switch>
-                    <Route path="/sign-in">
-                        <SignIn />
-                    </Route>
-                </Suspense>
+                <Switch>
+                    {routerListNoAuth(RoutersNoAuth)}
+                    <Redirect to={RouterNoAuth.rLogin} />
+                </Switch>
             ) : (
                 <>
                     {/* <nav>
@@ -93,17 +94,4 @@ const Routers = ({ isLoginStatus, loginCallSuccess }) => {
     );
 };
 
-Routers.propTypes = {
-    isLoginStatus: PropTypes.bool,
-    loginCallSuccess: PropTypes.func,
-};
-
-const mapStateToProps = createStructuredSelector({
-    isLoginStatus: makeSelectLoginStatus(),
-});
-
-const mapDispatchToProps = dispatch => bindActionCreators({ loginCallSuccess }, dispatch);
-
-const withConnect = connect(mapStateToProps, mapDispatchToProps);
-
-export default compose(withConnect, memo)(Routers);
+export default memo(Routers);

@@ -1,6 +1,7 @@
 const rHome = '/home';
 const rChater = '/chater';
 const rAbout = '/about';
+const rLogin = '/sign-in';
 
 const RouterApp = {
     rChater,
@@ -8,4 +9,8 @@ const RouterApp = {
     rAbout,
 };
 
-export default RouterApp;
+const RouterNoAuth = {
+    rLogin,
+};
+
+export { RouterApp, RouterNoAuth };

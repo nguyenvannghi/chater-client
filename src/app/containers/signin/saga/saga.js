@@ -1,10 +1,9 @@
 import { put, take, call, fork, all } from 'redux-saga/effects';
 import { loadingOpen, loadingClose } from 'app/components/loadingApp/action';
 import { isEmpty } from 'lodash';
-import { listCookieStorageName, setCookie, deleteCookie } from 'app/_utils/cookieStorage';
+import { listCookieStorageName, setCookie } from 'app/_utils/cookieStorage';
 import * as nameConfirmAction from 'app/components/confirmPopup/action';
 import { logoutAction } from 'app/_services/authAction';
-import history from 'app/routes/history';
 import { CONFIRM_ACTIONS } from 'app/consts';
 import * as nameEvents from './action';
 import * as nameConst from './const';

@@ -1,6 +1,7 @@
 import AsyncComponent from 'app/components/_asynComponent/index';
-import RouterApp from './const';
+import { RouterApp } from './const';
 
+// not support for server-side rendering
 const AsyncHome = AsyncComponent(() => import('app/containers/home'));
 const AsyncAbout = AsyncComponent(() => import('app/containers/about'));
 const AsyncChater = AsyncComponent(() => import('app/containers/chater'));
