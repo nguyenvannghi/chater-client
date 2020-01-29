@@ -6,9 +6,9 @@ import { createStructuredSelector } from 'reselect';
 import { Box, Text } from 'grommet';
 import { StatusGood, StatusWarning, StatusInfo, StatusCritical } from 'grommet-icons';
 import { STATUS_MESSAGE } from 'app/consts';
-import ToastLayer from './toast';
 import { initToast } from './action';
 import makeSelectToastConfig from './selector';
+import ToastLayer from '../toast-layer';
 
 const Toast = ({ toastConfig, initToast }) => {
     const { isOpen, hideDuration, typeToast, message } = toastConfig;

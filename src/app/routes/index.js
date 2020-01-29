@@ -1,70 +1,97 @@
-import React, { memo, lazy, Suspense } from 'react';
-import { connect } from 'react-redux';
-import { Switch, Route, Link } from 'react-router-dom';
+import React, { memo, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { ConnectedRouter } from 'connected-react-router';
-import { compose } from 'redux';
-import { createStructuredSelector } from 'reselect';
+import { isEmpty } from 'lodash';
+import { makeSelectLoginStatus } from 'app/containers/signin/saga/selector';
+import { loginCallSuccess } from 'app/containers/signin/saga/action';
 import history from './history';
+import { listCookieStorageName, getCookie } from '../_utils/cookieStorage';
 
-// not support for server-side rendering
-const Home = lazy(() => import('app/containers/home'));
-const About = lazy(() => import('app/containers/about'));
-const Login = lazy(() => import('app/containers/login'));
-const UseReducer = lazy(() => import('app/containers/useReducer'));
-const Chater = lazy(() => import('app/containers/chater'));
+import AllRouter from './routersApp';
+import RoutersNoAuth from './routerNoAuth';
+import { RouterApp, RouterNoAuth } from './const';
 
 const Routers = () => {
+    const dispatch = useDispatch();
+    const isLoginStatus = useSelector(makeSelectLoginStatus());
+    const [isLogin, setIsLogin] = useState(false);
+
+    const routesMatch = [];
+
+    const onceRouter = route => <Route key={Math.random()} {...route} />;
+
+    const routerListNav = data => {
+        data.forEach(route => {
+            if (Object.prototype.hasOwnProperty.call(route, 'sub')) {
+                routerListNav(route.sub);
+            } else if (Object.prototype.hasOwnProperty.call(route, 'childs')) {
+                route.childs.forEach(item => {
+                    routesMatch.push(onceRouter(item));
+                });
+
+                const routeParent = {
+                    title: route.title,
+                    path: route.path,
+                    component: route.component,
+                };
+                routesMatch.push(onceRouter(routeParent));
+            } else {
+                routesMatch.push(onceRouter(route));
+            }
+        });
+
+        return routesMatch;
+    };
+
+    const routerListNoAuth = data => {
+        const routers = [];
+        data.forEach(route => {
+            routers.push(onceRouter(route));
+        });
+
+        return routers;
+    };
+
+    useEffect(() => {
+        if (!isEmpty(getCookie(listCookieStorageName.access_token))) {
+            setIsLogin(true);
+            if (!isLoginStatus) {
+                dispatch(loginCallSuccess());
+            }
+        } else {
+            setIsLogin(isLoginStatus);
+        }
+    }, [dispatch, isLoginStatus]);
+
     return (
         <ConnectedRouter history={history}>
-            <div>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link to="/home">Home</Link>
-                        </li>
-                        <li>
-                            <Link to="/about">useState</Link>
-                        </li>
-                        <li>
-                            <Link to="/use-reducer">UseReducer</Link>
-                        </li>
-                        <li>
-                            <Link to="/login">Login</Link>
-                        </li>
-                        <li>
-                            <Link to="/">Chater</Link>
-                        </li>
-                    </ul>
-                </nav>
-
-                {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
-                <Suspense fallback={<div>Loading...</div>}>
-                    <Switch>
-                        <Route path="/about">
-                            <About />
-                        </Route>
-                        <Route path="/use-reducer">
-                            <UseReducer />
-                        </Route>
-                        <Route path="/login">
-                            <Login />
-                        </Route>
-                        <Route path="/">
-                            <Chater />
-                        </Route>
-                        <Route path="/home">
-                            <Home />
-                        </Route>
-                    </Switch>
-                </Suspense>
-            </div>
+            {!isLogin ? (
+                <Switch>
+                    {routerListNoAuth(RoutersNoAuth)}
+                    <Redirect to={RouterNoAuth.rLogin} />
+                </Switch>
+            ) : (
+                <>
+                    {/* <nav>
+                        <ul>
+                            <li>
+                                <Link to="/home">Home</Link>
+                            </li>
+                            <li>
+                                <Link to="/about">About</Link>
+                            </li>
+                            <li>
+                                <Link to="/">Chater</Link>
+                            </li>
+                        </ul>
+                    </nav> */}
+                    {routerListNav(AllRouter)}
+                    <Redirect path="*" to={RouterApp.rChater} />
+                </>
+            )}
         </ConnectedRouter>
     );
 };
 
-const mapStateToProps = createStructuredSelector({});
-
-const withConnect = connect(mapStateToProps);
-
-export default compose(withConnect, memo)(Routers);
+export default memo(Routers);

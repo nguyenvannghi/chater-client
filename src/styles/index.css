@@ -1,0 +1,51 @@
+.relative {
+  position: relative; }
+
+.absolute {
+  position: absolute; }
+
+.no-padding {
+  padding: 0; }
+
+.full-size {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0; }
+
+.overflow-auto {
+  overflow: auto; }
+
+.content-editable {
+  width: 100%;
+  height: 44px;
+  padding: 10px; }
+
+.bottom-side {
+  height: 60px; }
+
+.min-height-auto {
+  min-height: auto; }
+
+.child-no-padding > div {
+  padding: 0; }
+
+.bg-transparent {
+  background: transparent; }
+
+.suggesstion .suggest-selected {
+  list-style: none;
+  text-align: left;
+  padding: 0; }
+  .suggesstion .suggest-selected li {
+    display: inline;
+    background: #7d4cdb;
+    color: #fff;
+    margin: 0 5px;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer; }
+    .suggesstion .suggest-selected li .remove {
+      display: inline-block;
+      width: 16px;
+      height: 16px; }

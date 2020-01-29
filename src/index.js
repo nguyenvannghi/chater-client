@@ -2,13 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Grommet } from 'grommet';
+import clientConfig from 'graphql.config';
+import { ApolloProvider } from '@apollo/react-hooks';
 
 import store from './app/stores';
 import Routes from './app/routes';
 import LoadingApp from './app/components/loadingApp';
 import Toast from './app/components/toast';
+import ConfirmPopup from './app/components/confirmPopup';
 
 import './styles/index.scss';
+import 'emoji-mart/css/emoji-mart.css';
 
 const theme = {
     global: {
@@ -20,7 +24,8 @@ const theme = {
             white: '#fff',
         },
         font: {
-            family: 'Roboto',
+            // family: 'Luckiest Guy',
+            family: 'Baloo',
             size: '14px',
             height: '20px',
         },
@@ -28,14 +33,15 @@ const theme = {
 };
 
 ReactDOM.render(
-    <Provider store={store()}>
-        <Grommet theme={theme} full>
-            {/* <ResponsiveContext.Consumer> */}
-            <Toast />
-            <LoadingApp />
-            <Routes />
-            {/* </ResponsiveContext.Consumer> */}
-        </Grommet>
-    </Provider>,
+    <ApolloProvider client={clientConfig}>
+        <Provider store={store()}>
+            <Grommet theme={theme} full>
+                <Toast />
+                <LoadingApp />
+                <ConfirmPopup />
+                <Routes />
+            </Grommet>
+        </Provider>
+    </ApolloProvider>,
     document.getElementById('root'),
 );

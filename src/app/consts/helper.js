@@ -1,42 +1,10 @@
-import React from 'react';
 import * as JWT from 'jwt-decode';
-import moment from 'moment';
-import { Link as RouterLink } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
 import * as Yup from 'yup';
+import { Emoji, getEmojiDataFromNative } from 'emoji-mart';
+import EmojiData from 'emoji-mart/data/all.json';
+import emojiImage from './64.png';
 
 import { getCookie, listCookieStorageName } from 'app/_utils/cookieStorage';
-import { LocalStorageServices, LocalStorageKey } from 'app/_utils/localStorage';
-import { routerHasLogin } from 'app/routers/consts';
-import * as APP_CONST from '.';
-
-const downloadFile = (data, fileName, typeFile = APP_CONST.FILE_TYPE.EXPORT_FILE) => {
-    const url = window.URL.createObjectURL(new Blob([data], { type: typeFile }));
-    const link = document.createElement('a');
-    link.href = url;
-    const date = moment(new Date()).format(APP_CONST.FORMAT.DATE_ONLY);
-    link.setAttribute('download', `${fileName}-${date}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    return true;
-};
-
-const isValidateFile = files => {
-    if (!files) {
-        return false;
-    }
-    const type = files[0] && files[0].type;
-    const acceptType = type && type.replace('image/', '.');
-    return acceptType && APP_CONST.FILE_TYPE.IMAGE_FILE.includes(acceptType.toLowerCase());
-};
-
-const isValidateFileSize = files => {
-    if (!files) {
-        return false;
-    }
-    const { size } = files[0];
-    return size < APP_CONST.FILE_TYPE.FILE_MAX_SIZE;
-};
 
 const setFormControlValue = (data, schema, setValue) => {
     if (!Yup.reach(schema) || !data) {
@@ -48,25 +16,55 @@ const setFormControlValue = (data, schema, setValue) => {
     });
 };
 
-const LinkRouter = props => <Link {...props} component={RouterLink} />;
-
-const isDev = () => {
-    const parseToken = JWT(getCookie(listCookieStorageName.access_token));
-    const {
-        data: { is_dev: isDev },
-    } = parseToken;
-
-    const getDefaultProject = JSON.parse(LocalStorageServices.getItem(LocalStorageKey.defaultProject));
-    let routerDefault = null;
-    if (getDefaultProject) {
-        const { id, shortid } = getDefaultProject;
-        routerDefault = `${routerHasLogin.projects}/detail/${id}/${shortid}`;
-    }
-
-    return {
-        isDev,
-        routerDefault,
-    };
+const getCurrentUser = () => {
+    return getCookie(listCookieStorageName.access_token) && JWT(getCookie(listCookieStorageName.access_token));
 };
 
-export { downloadFile, isValidateFile, isValidateFileSize, setFormControlValue, LinkRouter, isDev };
+const EmojiNativeToIDParser = text => {
+    const arrayStr = [...text];
+    const newText = [];
+    arrayStr.forEach(item => {
+        const data = EmojiNaviveParser(item);
+        if (data && typeof data === 'object') {
+            newText.push(`:__${data.id}__:`);
+        } else {
+            newText.push(item);
+        }
+    });
+    return newText.join('');
+};
+
+const EmojiServerToClientParser = text => {
+    const regExpression = /:__([^:]*)__:/g;
+    let result;
+    while ((result = regExpression.exec(text)) !== null) {
+        text = text.replace(result[0], EmojiParser(result[1]));
+    }
+    return text;
+};
+
+const EmojiParser = emoji =>
+    Emoji({
+        html: true,
+        // set: emoji.toString(),
+        emoji: emoji.toString(),
+        size: 24,
+        backgroundImageFn: () => emojiImage,
+    });
+
+const EmojiNaviveParser = emoji => getEmojiDataFromNative(emoji, '', EmojiData);
+
+const removeItem = (array, item) => {
+    const length = array.length;
+    const index = array.findIndex(t => t._id === item._id);
+    if (index === 0) {
+        array = array.slice(1);
+    } else if (index === length - 1) {
+        array = array.slice(0, length - 1);
+    } else {
+        array = [...array.slice(0, index), ...array.slice(index + 1)];
+    }
+    return array;
+};
+
+export { setFormControlValue, getCurrentUser, EmojiServerToClientParser, EmojiNativeToIDParser, EmojiParser, removeItem };

@@ -1,14 +1,9 @@
-import { OPEN_TOAST, INIT_TOAST } from './const';
+import { createAction } from '@reduxjs/toolkit';
+import * as nameConst from './const';
 
-export const openToast = (typeToast, message, isOpen) => {
-    return {
-        type: OPEN_TOAST,
-        typeToast,
-        message,
-        isOpen,
-    };
-};
+const openToast = createAction(nameConst.OPEN_TOAST, (typeToast, message, isOpen) => ({
+    payload: { typeToast, message, isOpen },
+}));
+const initToast = createAction(nameConst.INIT_TOAST);
 
-export const initToast = () => ({
-    type: INIT_TOAST,
-});
+export { openToast, initToast };

@@ -1,11 +1,11 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { routerMiddleware } from 'connected-react-router';
+import { createInjectorsEnhancer } from 'redux-injectors';
 
-import ENV, { envNameConfig } from '../../config';
-import createReducer from '../reducers';
-// import rootSaga from '../saga';
-import history from '../routes/history';
+import createReducer from 'app/reducers';
+import rootSaga from 'app/saga';
+import history from 'app/routes/history';
 
 const storeConfig = (initialState = {}) => {
     let reduxSagaMonitorOptions = {};
@@ -21,23 +21,20 @@ const storeConfig = (initialState = {}) => {
 
     const middlewares = [sagaMiddleware, routesMiddleware];
 
-    const enhancers = [applyMiddleware(...middlewares)];
-    let composeEnhancers = compose;
-    if (ENV !== envNameConfig.production && typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
-        composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-            shouldHotReload: false,
-        });
-    }
+    const enhancers = [
+        createInjectorsEnhancer({
+            createReducer,
+            runSaga: sagaMiddleware.run,
+        }),
+    ];
+    const store = configureStore({
+        reducer: createReducer(),
+        preloadedState: initialState,
+        middleware: [...getDefaultMiddleware({ serializableCheck: false }), ...middlewares],
+        enhancers,
+    });
 
-    const store = createStore(createReducer(), initialState, composeEnhancers(...enhancers));
-
-    // sagaMiddleware.run(rootSaga);
-
-    store.runSaga = sagaMiddleware.run;
-
-    store.injectedReducers = {};
-    store.injectedSagas = {};
-    store.replaceReducer(createReducer(store.injectedReducers));
+    sagaMiddleware.run(rootSaga);
 
     return store;
 };

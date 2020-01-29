@@ -1,0 +1,11 @@
+import { CHATER_USER } from 'app/consts';
+export const USER_KEY_REDUCER_SAGA = `reducerUsers`;
+
+export const USER_CALL = `${CHATER_USER}_CALL`;
+export const USER_CALL_CANCEL = `${CHATER_USER}_CALL_CANCEL`;
+export const USER_CALL_FAILED = `${CHATER_USER}_CALL_FAILED`;
+export const USER_CALL_SUCCESS = `${CHATER_USER}_CALL_SUCCESS`;
+
+export const USER_CALL_UPDATE = `${CHATER_USER}_CALL_UPDATE`;
+export const USER_UPDATED_FAILED = `${CHATER_USER}_UPDATED_FAILED`;
+export const USER_UPDATED_SUCCESS = `${CHATER_USER}_UPDATED_SUCCESS`;

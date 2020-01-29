@@ -2,23 +2,17 @@ const env = process.env.REACT_APP_ENV;
 
 export const envNameConfig = {
     dev: 'dev',
-    qc: 'qc',
-    uat: 'uat',
     production: 'production',
 };
 
 const listConfigs = {
     [envNameConfig.dev]: {
-        API_SERVER: 'https://fakerestapi.azurewebsites.net/api',
-    },
-    [envNameConfig.qc]: {
-        API_SERVER: 'any',
-    },
-    [envNameConfig.uat]: {
-        API_SERVER: 'any',
+        API_SERVER: 'http://localhost:5002/',
+        API_SOCKET: 'ws://localhost:5002/subscriptions',
     },
     [envNameConfig.production]: {
-        API_SERVER: 'any',
+        API_SERVER: 'https://chater-server.now.sh/',
+        API_SOCKET: 'wss://chater-server.now.sh/subscriptions',
     },
 };
 
